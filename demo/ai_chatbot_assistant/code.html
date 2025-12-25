@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CanadaPath AI - Immigration Assistant</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1f3b61", // Navy Blue
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#14181e",
+                        "accent-gold": "#C5A059", // Muted Gold
+                        "accent-red": "#C41E3A",  // Maple Red
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "heading": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom Glassmorphism Utilities */
+        .glass-panel {
+            background: rgba(31, 41, 55, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .glass-panel-lighter {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-input {
+            background: rgba(20, 24, 30, 0.6);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Scrollbar styling for webkit browsers */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1); 
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2); 
+        }
+
+        .typing-dot {
+            animation: typing 1.4s infinite ease-in-out both;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-white font-display overflow-hidden h-screen selection:bg-accent-gold selection:text-primary">
+<!-- Background Image/Gradient -->
+<div class="fixed inset-0 z-0 pointer-events-none">
+<div class="absolute inset-0 bg-gradient-to-br from-[#0f1520] via-[#14181e] to-[#1a202c]"></div>
+<!-- Abstract Canadian Map/Landscape Hint -->
+<div class="absolute inset-0 opacity-20 bg-cover bg-center mix-blend-overlay" data-alt="Abstract dark topographic map texture representing Canadian geography" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBvnZRXCLZnhwOod7a7StwLVW9tNQQSbg7kPWGpHUZR-U1uXQ3iRXmRIACjWmSyPVm69yRrsGH22LFfH32vSZa8AbIM4qyq1rMRsOn8bppvonz2UeqdiVqajq1vB76gxxz9MeaX5VMmHjmSeAh5Tg5gP4ZLHj55RrjAnj_w6PcW5NUlz2GQCf0MyjI87oYdF912AhtB_SJLaS4UByphoDiByQqOJziYz5rQmoeIsw97QK3o0EW_G2D2mG3dIbu_bw-IfRpQ9xNmv-A');">
+</div>
+<!-- Red and Gold Glows -->
+<div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/30 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] bg-accent-red/10 rounded-full blur-[100px]"></div>
+</div>
+<!-- Main Layout Container -->
+<div class="relative z-10 flex h-full w-full">
+<!-- SIDEBAR NAVIGATION -->
+<aside class="w-20 lg:w-72 flex flex-col justify-between glass-panel border-r-0 border-y-0 border-l-0 h-full shrink-0 transition-all duration-300">
+<div class="flex flex-col gap-6 p-4 h-full">
+<!-- Branding -->
+<div class="flex items-center gap-3 px-2 py-2">
+<div class="relative flex items-center justify-center size-10 shrink-0 rounded-xl bg-gradient-to-br from-primary to-[#2a4d7d] shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-white" style="font-size: 24px;">psychiatry</span> <!-- Abstract leaf shape -->
+</div>
+<div class="hidden lg:flex flex-col">
+<h1 class="text-white text-lg font-heading font-bold leading-none tracking-tight">CanadaPath AI</h1>
+<p class="text-slate-400 text-xs font-medium">Immigration Assistant</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col gap-2 mt-4">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-accent-gold transition-colors">home</span>
+<span class="hidden lg:block text-sm font-medium">Home</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/20 text-white border border-primary/30 shadow-inner shadow-primary/10" href="#">
+<span class="material-symbols-outlined text-accent-gold fill-1">chat_bubble</span>
+<span class="hidden lg:block text-sm font-medium">Chat Assistant</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-accent-gold transition-colors">description</span>
+<span class="hidden lg:block text-sm font-medium">Services &amp; Forms</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-accent-gold transition-colors">folder_shared</span>
+<span class="hidden lg:block text-sm font-medium">My Documents</span>
+</a>
+</nav>
+</div>
+<!-- Profile Footer -->
+<div class="p-4 border-t border-white/5">
+<a class="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-white/5 transition-colors" href="#">
+<div class="size-9 rounded-full bg-cover bg-center border border-white/10" data-alt="User profile picture" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB1pay-iDSKpnPYsxy8zRSLx6a1frPkDpKR7PqUJy5__SoSc-69FsmrqXAVLRw9ynpHaerOQbUfdUJDmGL2PUqLnhXQDfCQQT2CIoM9-a7yIbOv6l1uKmnaeqybKYXM8qur9LWdOg9eolWOlAkThGOMTetYhXL4GPzW-CzOTHWYZIZHolrbrty4SnIySetKNeyC3hyLk92WCcH2v0VrPwmgWKrJ1HPFZxUxk0PNvjuIg29qBYeum9CxiqoD6GjOZT6B8l7ily99TIo');"></div>
+<div class="hidden lg:flex flex-col">
+<p class="text-white text-sm font-medium leading-none">Alex Chen</p>
+<p class="text-slate-500 text-xs">Premium Plan</p>
+</div>
+</a>
+</div>
+</aside>
+<!-- MAIN CONTENT AREA -->
+<main class="flex-1 flex overflow-hidden p-4 lg:p-6 gap-6">
+<!-- CHAT HISTORY SIDEBAR (Collapsible on mobile usually, visible on desktop) -->
+<section class="hidden md:flex w-80 flex-col gap-4 shrink-0">
+<div class="px-2">
+<h3 class="text-white text-lg font-heading font-bold tracking-tight">History</h3>
+</div>
+<div class="flex-1 overflow-y-auto pr-2 flex flex-col gap-3">
+<!-- Today Section -->
+<p class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-2 mt-2">Today</p>
+<button class="flex items-center gap-3 p-3 rounded-xl glass-panel-lighter hover:bg-white/10 transition-all text-left group border-l-2 border-l-accent-gold">
+<div class="flex items-center justify-center size-8 rounded-lg bg-primary/20 text-accent-gold shrink-0">
+<span class="material-symbols-outlined text-[20px]">school</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-white text-sm font-medium truncate">Study Permit Extension</p>
+<p class="text-slate-400 text-xs truncate">What are the financial proof...</p>
+</div>
+</button>
+<button class="flex items-center gap-3 p-3 rounded-xl glass-panel-lighter hover:bg-white/10 transition-all text-left group border-l-2 border-l-transparent hover:border-l-primary/50">
+<div class="flex items-center justify-center size-8 rounded-lg bg-white/5 text-slate-400 shrink-0 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">work</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-white text-sm font-medium truncate">Express Entry CRS Score</p>
+<p class="text-slate-400 text-xs truncate">Calculate based on IELTS 8.0</p>
+</div>
+</button>
+<!-- Yesterday Section -->
+<p class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-2 mt-4">Yesterday</p>
+<button class="flex items-center gap-3 p-3 rounded-xl glass-panel-lighter hover:bg-white/10 transition-all text-left group border-l-2 border-l-transparent hover:border-l-primary/50">
+<div class="flex items-center justify-center size-8 rounded-lg bg-white/5 text-slate-400 shrink-0 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">family_restroom</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-white text-sm font-medium truncate">Spousal Sponsorship</p>
+<p class="text-slate-400 text-xs truncate">Processing times for outland...</p>
+</div>
+</button>
+<button class="flex items-center gap-3 p-3 rounded-xl glass-panel-lighter hover:bg-white/10 transition-all text-left group border-l-2 border-l-transparent hover:border-l-primary/50">
+<div class="flex items-center justify-center size-8 rounded-lg bg-white/5 text-slate-400 shrink-0 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">gavel</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-white text-sm font-medium truncate">PNP Ontario</p>
+<p class="text-slate-400 text-xs truncate">Tech draw requirements</p>
+</div>
+</button>
+</div>
+<!-- New Chat Button -->
+<button class="flex items-center justify-center gap-2 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-dashed border-white/20 text-slate-300 hover:text-white transition-all w-full">
+<span class="material-symbols-outlined">add</span>
+<span class="text-sm font-medium">Start New Chat</span>
+</button>
+</section>
+<!-- ACTIVE CHAT INTERFACE -->
+<section class="flex-1 flex flex-col glass-panel rounded-2xl overflow-hidden relative shadow-2xl shadow-black/50">
+<!-- Chat Header -->
+<header class="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-white/[0.02]">
+<div class="flex items-center gap-4">
+<div class="relative">
+<div class="size-10 rounded-full bg-gradient-to-br from-primary to-indigo-900 flex items-center justify-center shadow-lg shadow-primary/20 border border-white/10">
+<span class="material-symbols-outlined text-white text-[20px]">smart_toy</span>
+</div>
+<div class="absolute bottom-0 right-0 size-3 bg-green-500 border-2 border-[#1a202c] rounded-full"></div>
+</div>
+<div>
+<h2 class="text-white font-heading font-bold text-sm">CanadaPath AI</h2>
+<p class="text-accent-gold text-xs flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px] animate-pulse">bolt</span>
+                                Online • 24/7 Support
+                            </p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-lg hover:bg-white/5 text-slate-400 hover:text-white transition-colors" title="Settings">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-accent-red/20 text-slate-300 hover:text-accent-red transition-colors border border-transparent hover:border-accent-red/30" title="Clear Chat">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+<span class="text-xs font-medium">Clear</span>
+</button>
+</div>
+</header>
+<!-- Messages Area -->
+<div class="flex-1 overflow-y-auto p-6 flex flex-col gap-6 scroll-smooth" id="chat-container">
+<!-- Date Separator -->
+<div class="flex justify-center">
+<span class="px-3 py-1 rounded-full bg-white/5 text-[10px] text-slate-400 font-medium uppercase tracking-wider border border-white/5">Today, 10:23 AM</span>
+</div>
+<!-- AI Welcome Message -->
+<div class="flex gap-4 max-w-3xl">
+<div class="size-8 rounded-full bg-primary flex items-center justify-center shrink-0 mt-1 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-white text-[16px]">smart_toy</span>
+</div>
+<div class="flex flex-col gap-2">
+<div class="p-4 rounded-2xl rounded-tl-none bg-primary/20 border border-primary/20 text-slate-100 shadow-sm backdrop-blur-sm">
+<p class="text-sm leading-relaxed">Hello Alex! 👋 I'm your CanadaPath assistant.</p>
+<p class="text-sm leading-relaxed mt-2">I can help you navigate Canadian immigration programs, calculate CRS scores, or clarify visa requirements. How can I help you with your journey today?</p>
+</div>
+</div>
+</div>
+<!-- User Message -->
+<div class="flex gap-4 max-w-3xl self-end flex-row-reverse">
+<div class="size-8 rounded-full bg-cover bg-center shrink-0 mt-1 border border-white/10 shadow-sm" data-alt="User avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCYa2x1IU3ZqF4siM0E2lprbYt61BcjwRoD58IGd_7xgkD19aWM8NxvBrHqYT1f8PuOkcNujAV3YIY4KA5RzjrbVLPurS1e7nbdgBM5PaxKHj0ODh4M2Pn0iTxRXVOdL0--D-E9qMuW1elsrfMABuPWoPBAsKGaez4nJOp9R1AHHyhAThBpayHth7wmroe72ua2JzH95LnkPRAF5afm82ghEgL05v42o-lK4sPUfit7276ce5JVNKNCnALjt0lsuvFzra3kJ7ct5eQ');"></div>
+<div class="flex flex-col gap-2 items-end">
+<div class="p-4 rounded-2xl rounded-tr-none bg-white/10 border border-white/5 text-white shadow-sm backdrop-blur-md">
+<p class="text-sm leading-relaxed">I have a question about the study permit extension. What are the financial requirements if I want to stay for another year?</p>
+</div>
+<span class="text-[10px] text-slate-500 font-medium mr-1">10:24 AM</span>
+</div>
+</div>
+<!-- AI Response -->
+<div class="flex gap-4 max-w-3xl animate-fade-in-up">
+<div class="size-8 rounded-full bg-primary flex items-center justify-center shrink-0 mt-1 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-white text-[16px]">smart_toy</span>
+</div>
+<div class="flex flex-col gap-2">
+<div class="p-5 rounded-2xl rounded-tl-none bg-primary/20 border border-primary/20 text-slate-100 shadow-sm backdrop-blur-sm">
+<p class="text-sm leading-relaxed mb-3">Great question! For a <strong class="text-white">Study Permit extension</strong>, Immigration, Refugees and Citizenship Canada (IRCC) requires you to prove you can support yourself financially.</p>
+<div class="bg-black/20 rounded-xl p-3 mb-3 border border-white/5">
+<p class="text-xs font-bold text-accent-gold uppercase mb-2 tracking-wide flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">monetization_on</span>
+                                        2024 Updated Requirements
+                                    </p>
+<ul class="text-sm space-y-2 list-disc list-inside text-slate-200 ml-1">
+<li><span class="text-slate-400">Tuition:</span> Proof of payment for the upcoming academic year.</li>
+<li><span class="text-slate-400">Living Expenses:</span> Approx. <strong>$20,635 CAD</strong> for one person (updated from $10k previously).</li>
+<li><span class="text-slate-400">Transportation:</span> Funds for return transportation to your home country.</li>
+</ul>
+</div>
+<p class="text-sm leading-relaxed">You can prove this via bank statements (past 4 months), a bank draft, or proof of a student loan. Would you like a checklist of documents needed for the application?</p>
+</div>
+<!-- Suggestion Chips from AI -->
+<div class="flex flex-wrap gap-2 mt-1">
+<button class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-slate-300 hover:text-white transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">checklist</span>
+                                    Get Document Checklist
+                                </button>
+<button class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-slate-300 hover:text-white transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">link</span>
+                                    Official IRCC Link
+                                </button>
+</div>
+<span class="text-[10px] text-slate-500 font-medium ml-1">10:25 AM</span>
+</div>
+</div>
+<!-- Loading State (Typing) -->
+<div class="flex gap-4 max-w-3xl hidden">
+<div class="size-8 rounded-full bg-primary flex items-center justify-center shrink-0 mt-1">
+<span class="material-symbols-outlined text-white text-[16px]">smart_toy</span>
+</div>
+<div class="p-4 rounded-2xl rounded-tl-none bg-primary/20 border border-primary/20 w-16 flex items-center justify-center gap-1">
+<div class="size-1.5 bg-slate-400 rounded-full typing-dot"></div>
+<div class="size-1.5 bg-slate-400 rounded-full typing-dot"></div>
+<div class="size-1.5 bg-slate-400 rounded-full typing-dot"></div>
+</div>
+</div>
+</div>
+<!-- Input Area Footer -->
+<div class="p-4 md:p-6 bg-gradient-to-t from-[#14181e] to-transparent pt-10">
+<!-- Quick Prompt Chips -->
+<div class="flex gap-2 overflow-x-auto pb-3 no-scrollbar mb-1 w-full max-w-4xl mx-auto">
+<button class="shrink-0 px-3 py-1 rounded-full bg-white/5 hover:bg-primary/30 border border-white/10 hover:border-primary/50 text-xs text-slate-300 transition-all">
+                            How to apply for PGWP?
+                        </button>
+<button class="shrink-0 px-3 py-1 rounded-full bg-white/5 hover:bg-primary/30 border border-white/10 hover:border-primary/50 text-xs text-slate-300 transition-all">
+                            Calculate my CRS Score
+                        </button>
+<button class="shrink-0 px-3 py-1 rounded-full bg-white/5 hover:bg-primary/30 border border-white/10 hover:border-primary/50 text-xs text-slate-300 transition-all">
+                            Processing times for PR
+                        </button>
+</div>
+<!-- Input Box -->
+<div class="relative max-w-4xl mx-auto">
+<div class="glass-input rounded-xl flex items-end p-2 gap-2 shadow-lg">
+<!-- Attach Button -->
+<button class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors shrink-0" title="Attach Document">
+<span class="material-symbols-outlined">attach_file</span>
+</button>
+<!-- Text Area -->
+<textarea class="w-full bg-transparent border-none text-white placeholder-slate-500 focus:ring-0 resize-none py-2.5 max-h-32 text-sm" placeholder="Ask anything about Canadian immigration..." rows="1"></textarea>
+<!-- Voice Button -->
+<button class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors shrink-0" title="Voice Input">
+<span class="material-symbols-outlined">mic</span>
+</button>
+<!-- Send Button -->
+<button class="p-2 rounded-lg bg-primary hover:bg-blue-700 text-white shadow-lg shadow-blue-900/20 transition-all transform hover:scale-105 shrink-0 flex items-center justify-center aspect-square">
+<span class="material-symbols-outlined fill-1">send</span>
+</button>
+</div>
+</div>
+<!-- Disclaimer -->
+<p class="text-center text-[10px] text-slate-600 mt-3 font-medium">
+                        CanadaPath AI provides guidance only and does not constitute official legal advice.
+                    </p>
+</div>
+</section>
+</main>
+</div>
+</body></html>

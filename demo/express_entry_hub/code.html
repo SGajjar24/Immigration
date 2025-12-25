@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Express Entry Hub - CanadaPath AI</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1f3b61",
+                        "primary-light": "#2d5283",
+                        "accent-gold": "#E1AD01",
+                        "accent-red": "#C5281C",
+                        "background-dark": "#0B1015", // Deep charcoal/navy
+                        "glass-bg": "rgba(255, 255, 255, 0.03)",
+                        "glass-border": "rgba(255, 255, 255, 0.08)",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                    },
+                    backgroundImage: {
+                        'main-gradient': 'linear-gradient(to bottom right, #0f172a, #0B1015)',
+                        'gold-gradient': 'linear-gradient(135deg, #FFD700 0%, #E1AD01 100%)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-panel-hover:hover {
+            background: rgba(30, 41, 59, 0.6);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-white min-h-screen overflow-x-hidden selection:bg-primary selection:text-white bg-main-gradient">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 glass-panel border-b-0 border-b-glass-border">
+<div class="flex items-center justify-between px-6 py-4 max-w-[1600px] mx-auto">
+<div class="flex items-center gap-10">
+<div class="flex items-center gap-3">
+<div class="size-8 text-accent-red">
+<svg fill="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM11 17H7.07004L8.17004 15.11C8.36004 14.78 8.12004 14.36 7.74004 14.36H5.43004C5.16004 14.36 4.95004 14.11 5.01004 13.84C5.35004 12.35 6.64004 10.98 8.89004 10.45L9.36004 8.78001C9.45004 8.44001 9.80004 8.24001 10.13 8.33001L13.87 9.38001C14.2 9.47001 14.41 9.82001 14.32 10.15L13.85 11.82C16.1 12.35 17.39 13.72 17.73 15.21C17.79 15.48 17.58 15.73 17.31 15.73H15L14.61 17H11Z"></path>
+</svg>
+</div>
+<h2 class="text-xl font-bold tracking-tight text-white">CanadaPath AI</h2>
+</div>
+<!-- Search -->
+<div class="hidden md:flex items-center bg-white/5 rounded-full px-4 py-2 border border-white/5 focus-within:border-primary/50 focus-within:bg-white/10 transition-all w-96">
+<span class="material-symbols-outlined text-gray-400 text-xl">search</span>
+<input class="bg-transparent border-none text-sm text-white placeholder-gray-400 focus:ring-0 w-full ml-2" placeholder="Search profiles, NOC codes, or news..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="relative p-2 rounded-full hover:bg-white/10 transition-colors text-gray-300 hover:text-white">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-accent-red rounded-full border border-[#0B1015]"></span>
+</button>
+<div class="h-8 w-[1px] bg-white/10 mx-1"></div>
+<div class="flex items-center gap-3 cursor-pointer group">
+<div class="text-right hidden sm:block">
+<p class="text-sm font-semibold text-white group-hover:text-primary-light transition-colors">John Doe</p>
+<p class="text-xs text-accent-gold">Premium Member</p>
+</div>
+<div class="size-10 rounded-full bg-cover bg-center border-2 border-white/10 group-hover:border-primary transition-colors" data-alt="User profile avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCNzeZkicUUp3dNNPgwlewJTdsSKiSM_bXyP6Pot_zl03VA-3sfZ2NXm5ExA7sNBXnhNJfsMpYa7TaF0bLukMT0QwaOw0MUHtXxiTY7gZj-DcEFC5TS4Zyddyt062xAGrjZ91Hw_SA88zOAyhhC4UYcaHKGIvZ3k0og50rrE2ccXHpPEtaIJXu6ZnOfMgmDGP8dTd2f0sea9BN1PH8_6KG7VHREyeNOr-gp67T9C9p8WbPzeveS1sd_L6OFB2_KtynltZ7q_JWA4no');"></div>
+</div>
+</div>
+</div>
+</header>
+<div class="max-w-[1600px] mx-auto flex flex-col lg:flex-row min-h-[calc(100vh-80px)]">
+<!-- Left Sidebar -->
+<aside class="w-full lg:w-64 p-4 lg:py-8 lg:pl-6 lg:pr-2 hidden md:block">
+<div class="sticky top-24 flex flex-col gap-6">
+<!-- Profile Summary Mini -->
+<div class="glass-panel p-4 rounded-xl flex items-center gap-3 mb-2">
+<div class="size-10 rounded-full bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center text-white font-bold text-xs">JD</div>
+<div>
+<p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">CRS Score</p>
+<p class="text-lg font-bold text-white">482 <span class="text-xs font-normal text-green-400 ml-1">▲ 2</span></p>
+</div>
+</div>
+<!-- Navigation -->
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/20 border border-primary/30 text-white font-medium shadow-[0_0_15px_rgba(31,59,97,0.3)]" href="#">
+<span class="material-symbols-outlined text-accent-gold" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                        Dashboard
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">calculate</span>
+                        CRS Calculator
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">checklist</span>
+                        Document Checklist
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">forum</span>
+                        Community Forum
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">analytics</span>
+                        Score Analysis
+                    </a>
+</nav>
+<div class="mt-4 border-t border-white/10 pt-4">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+                        Settings
+                    </a>
+</div>
+<!-- Promo / Upgrade -->
+<div class="mt-auto glass-panel p-4 rounded-xl relative overflow-hidden group cursor-pointer">
+<div class="absolute inset-0 bg-gradient-to-tr from-accent-gold/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-2 text-accent-gold">
+<span class="material-symbols-outlined text-sm">diamond</span>
+<span class="text-xs font-bold uppercase">Pro Plan</span>
+</div>
+<p class="text-sm text-gray-300 mb-3">Get detailed draw predictions and document review.</p>
+<button class="w-full py-2 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold text-white border border-white/10 transition-colors">Upgrade Now</button>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 p-4 lg:p-8 min-w-0">
+<!-- Hero Section -->
+<div class="mb-8">
+<h1 class="text-3xl font-bold text-white mb-6">Express Entry Hub</h1>
+<div class="glass-panel p-6 rounded-2xl relative overflow-hidden">
+<!-- Decorational Glow -->
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+<div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+<div class="flex-1">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-semibold border border-green-500/30 mb-3">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+</span>
+                                Profile Active in Pool
+                            </div>
+<h2 class="text-2xl font-bold text-white mb-2">Welcome Back, John</h2>
+<p class="text-gray-300 max-w-xl text-sm leading-relaxed">
+                                Your profile is currently active. The next predicted draw for <strong class="text-white">Federal Skilled Worker</strong> is in <span class="text-accent-gold">3 days</span>. Ensure your employment records are up to date to maximize your CRS score.
+                            </p>
+</div>
+<div class="flex gap-3">
+<button class="px-5 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white font-medium text-sm hover:bg-white/10 transition-colors">
+                                Update Profile
+                            </button>
+<button class="px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-light text-white font-medium text-sm shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
+                                View Next Steps
+                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Tabs Navigation -->
+<div class="mb-6 border-b border-white/10">
+<div class="flex gap-8 overflow-x-auto pb-1 hide-scrollbar">
+<button class="pb-3 border-b-2 border-accent-gold text-white font-semibold text-sm whitespace-nowrap">Federal Skilled Worker</button>
+<button class="pb-3 border-b-2 border-transparent text-gray-400 hover:text-white font-medium text-sm whitespace-nowrap transition-colors">Canadian Experience Class</button>
+<button class="pb-3 border-b-2 border-transparent text-gray-400 hover:text-white font-medium text-sm whitespace-nowrap transition-colors">Federal Skilled Trades</button>
+<button class="pb-3 border-b-2 border-transparent text-gray-400 hover:text-white font-medium text-sm whitespace-nowrap transition-colors">PNP</button>
+</div>
+</div>
+<!-- Grid Content -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
+<!-- Chart / Stats Area -->
+<div class="xl:col-span-2 glass-panel p-6 rounded-2xl">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-lg font-bold text-white">Score Trend Analysis</h3>
+<div class="flex bg-white/5 rounded-lg p-0.5">
+<button class="px-3 py-1 rounded-md text-xs font-medium bg-white/10 text-white shadow-sm">6M</button>
+<button class="px-3 py-1 rounded-md text-xs font-medium text-gray-400 hover:text-white transition-colors">1Y</button>
+<button class="px-3 py-1 rounded-md text-xs font-medium text-gray-400 hover:text-white transition-colors">All</button>
+</div>
+</div>
+<!-- Simulated Chart Area -->
+<div class="h-64 w-full flex items-end justify-between gap-2 px-2 pb-2 border-b border-l border-white/10 relative">
+<!-- Y-Axis Grid Lines (Visual only) -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
+<div class="border-t border-white w-full h-0"></div>
+<div class="border-t border-white w-full h-0"></div>
+<div class="border-t border-white w-full h-0"></div>
+<div class="border-t border-white w-full h-0"></div>
+<div class="border-t border-white w-full h-0"></div>
+</div>
+<!-- Data Bars with Gradient -->
+<div class="w-full flex items-end justify-around h-full gap-2 z-10 pt-8">
+<div class="w-full max-w-[40px] bg-white/10 rounded-t-sm h-[40%] group relative hover:bg-primary/40 transition-all cursor-pointer">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">481</div>
+</div>
+<div class="w-full max-w-[40px] bg-white/10 rounded-t-sm h-[55%] group relative hover:bg-primary/40 transition-all cursor-pointer">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">489</div>
+</div>
+<div class="w-full max-w-[40px] bg-white/10 rounded-t-sm h-[45%] group relative hover:bg-primary/40 transition-all cursor-pointer">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">483</div>
+</div>
+<div class="w-full max-w-[40px] bg-white/10 rounded-t-sm h-[65%] group relative hover:bg-primary/40 transition-all cursor-pointer">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">496</div>
+</div>
+<div class="w-full max-w-[40px] bg-white/10 rounded-t-sm h-[60%] group relative hover:bg-primary/40 transition-all cursor-pointer">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">491</div>
+</div>
+<div class="w-full max-w-[40px] bg-gradient-to-t from-primary/50 to-accent-gold rounded-t-sm h-[85%] group relative shadow-[0_0_15px_rgba(225,173,1,0.3)] cursor-pointer">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-accent-gold text-black font-bold text-xs px-2 py-1 rounded">524</div>
+</div>
+</div>
+</div>
+<div class="flex justify-between mt-2 text-xs text-gray-500 px-2">
+<span>May</span>
+<span>Jun</span>
+<span>Jul</span>
+<span>Aug</span>
+<span>Sep</span>
+<span class="text-accent-gold font-bold">Oct</span>
+</div>
+</div>
+<!-- Eligibility Mini Card -->
+<div class="xl:col-span-1 glass-panel p-6 rounded-2xl flex flex-col justify-between bg-gradient-to-br from-primary/20 to-transparent">
+<div>
+<div class="flex items-center gap-3 mb-4">
+<div class="p-2 bg-primary/30 rounded-lg">
+<span class="material-symbols-outlined text-white">verified</span>
+</div>
+<h3 class="text-lg font-bold text-white">Eligibility Check</h3>
+</div>
+<p class="text-sm text-gray-300 mb-6">
+                            Based on recent trends, your current score of <strong>482</strong> is competitive for category-based draws but may require improvement for general draws.
+                        </p>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between text-sm py-2 border-b border-white/5">
+<span class="text-gray-400">Education</span>
+<span class="text-green-400 flex items-center gap-1"><span class="material-symbols-outlined text-sm">check_circle</span> Maxed</span>
+</div>
+<div class="flex items-center justify-between text-sm py-2 border-b border-white/5">
+<span class="text-gray-400">Language</span>
+<span class="text-accent-gold flex items-center gap-1"><span class="material-symbols-outlined text-sm">warning</span> Improve</span>
+</div>
+<button class="w-full mt-4 py-2.5 rounded-lg bg-white text-primary-light font-bold text-sm hover:bg-gray-100 transition-colors">
+                            Simulate Improvements
+                        </button>
+</div>
+</div>
+</div>
+<!-- Program Info Cards -->
+<h3 class="text-xl font-bold text-white mb-4">Program Requirements</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="glass-panel p-5 rounded-xl border-l-4 border-l-primary hover:bg-white/5 transition-colors group cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<div class="size-10 rounded-lg bg-white/5 flex items-center justify-center text-white">
+<span class="material-symbols-outlined">work</span>
+</div>
+<span class="material-symbols-outlined text-gray-600 group-hover:text-white transition-colors">arrow_outward</span>
+</div>
+<h4 class="font-bold text-white mb-1">Work Experience</h4>
+<p class="text-xs text-gray-400 leading-relaxed">Must have 1 year of continuous full-time (or equivalent) paid work experience in the last 10 years.</p>
+</div>
+<div class="glass-panel p-5 rounded-xl border-l-4 border-l-accent-gold hover:bg-white/5 transition-colors group cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<div class="size-10 rounded-lg bg-white/5 flex items-center justify-center text-white">
+<span class="material-symbols-outlined">language</span>
+</div>
+<span class="material-symbols-outlined text-gray-600 group-hover:text-white transition-colors">arrow_outward</span>
+</div>
+<h4 class="font-bold text-white mb-1">Language Skills</h4>
+<p class="text-xs text-gray-400 leading-relaxed">Minimum CLB 7 in all four abilities for FSW. Higher scores significantly boost CRS ranking.</p>
+</div>
+<div class="glass-panel p-5 rounded-xl border-l-4 border-l-gray-500 hover:bg-white/5 transition-colors group cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<div class="size-10 rounded-lg bg-white/5 flex items-center justify-center text-white">
+<span class="material-symbols-outlined">school</span>
+</div>
+<span class="material-symbols-outlined text-gray-600 group-hover:text-white transition-colors">arrow_outward</span>
+</div>
+<h4 class="font-bold text-white mb-1">Education</h4>
+<p class="text-xs text-gray-400 leading-relaxed">Secondary education required. ECA report needed for foreign degrees.</p>
+</div>
+</div>
+</main>
+<!-- Right Panel (Live Data) -->
+<aside class="w-full lg:w-80 p-4 lg:py-8 lg:pr-6 lg:pl-2">
+<div class="sticky top-24 flex flex-col gap-6">
+<!-- Live Results Widget -->
+<div class="glass-panel rounded-xl overflow-hidden shadow-lg shadow-black/20">
+<div class="bg-primary/20 p-4 border-b border-white/10 flex justify-between items-center">
+<h3 class="text-sm font-bold text-white uppercase tracking-wider">Latest Draw</h3>
+<span class="animate-pulse flex h-2 w-2 rounded-full bg-accent-red"></span>
+</div>
+<div class="p-6 text-center">
+<p class="text-gray-400 text-xs uppercase tracking-wide mb-1">CRS Score Cut-off</p>
+<h2 class="text-5xl font-extrabold text-transparent bg-clip-text bg-gold-gradient mb-2 drop-shadow-sm">524</h2>
+<div class="inline-block bg-white/5 rounded px-2 py-1 text-xs text-gray-300 mb-6">
+                            Draw #273 • General
+                        </div>
+<div class="grid grid-cols-2 gap-4 border-t border-white/10 pt-4">
+<div class="text-left">
+<p class="text-[10px] text-gray-500 uppercase">Date</p>
+<p class="text-sm font-semibold text-white">Oct 24, 2023</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-gray-500 uppercase">Invites</p>
+<p class="text-sm font-semibold text-white">3,000</p>
+</div>
+</div>
+</div>
+<div class="bg-accent-red/10 p-3 text-center border-t border-accent-red/20">
+<a class="text-xs font-bold text-accent-red hover:text-red-400 transition-colors flex items-center justify-center gap-1" href="#">
+                            View Full Analysis <span class="material-symbols-outlined text-sm">chevron_right</span>
+</a>
+</div>
+</div>
+<!-- News Feed -->
+<div>
+<div class="flex items-center justify-between mb-4 px-1">
+<h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider">Latest News</h3>
+<a class="text-xs text-primary-light hover:text-white transition-colors" href="#">View All</a>
+</div>
+<div class="flex flex-col gap-3">
+<a class="glass-panel p-3 rounded-lg flex gap-3 hover:bg-white/5 transition-colors group" href="#">
+<div class="size-12 rounded bg-cover bg-center shrink-0 opacity-80 group-hover:opacity-100 transition-opacity" data-alt="Abstract image representing Canada immigration news" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAOZSohLHLvSLBOIDbb_Bk2xHnXTX1iC4my4bhf4uLOQ47EcY8ZsZe4rkTIDg_AUbND84WdlXI4vC0HDegCLMtKLfLuCuXdgsS3oPiS7TYVuBrQu9Bau6QWtl6co3-JsHue2APqVIwkhpw5d0UWe0J-nWrC8Yh5bATZ2alqjAEghAzfsYAT56vErgoLbNBYbwjptyZXIANELIF1plR2dmKvDN30B5TV-GnGco11q_kBusTBnHQp64ps6fXcWkhuWErFA5z40sJt2vE');"></div>
+<div class="flex flex-col justify-center">
+<h5 class="text-xs font-bold text-white leading-tight mb-1 line-clamp-2">IRCC announces new category-based selection for transport</h5>
+<p class="text-[10px] text-gray-500">2 hours ago</p>
+</div>
+</a>
+<a class="glass-panel p-3 rounded-lg flex gap-3 hover:bg-white/5 transition-colors group" href="#">
+<div class="size-12 rounded bg-cover bg-center shrink-0 opacity-80 group-hover:opacity-100 transition-opacity" data-alt="Abstract image representing provincial nomination" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC4ajbuEp19DT67eoPUA2iTagMAtqBBDH7ZDjWCP5KCxnLzPvIOxOIUiMlKgAHifpnB1DrM4_pMmmbje41OkQI24jOg1ZomEa3_f2UhHxB6rdGvvPTIpN2ssEfx5CJGYxtpWQIXuZl9GNhn17v5o_pUvEmMQdCUBKVCoCrF2pRC6k64JF5acQOQmj3DCL-UGDVnHL3U50tT64MWxMTQrWyUFZPq2JO-fgGA9mm3icamNLYqJRTk44noo2QTFyJxJJ_RFaz0TB4UiKY');"></div>
+<div class="flex flex-col justify-center">
+<h5 class="text-xs font-bold text-white leading-tight mb-1 line-clamp-2">Ontario PNP draw invites 1,200 tech workers</h5>
+<p class="text-[10px] text-gray-500">1 day ago</p>
+</div>
+</a>
+<a class="glass-panel p-3 rounded-lg flex gap-3 hover:bg-white/5 transition-colors group" href="#">
+<div class="size-12 rounded bg-cover bg-center shrink-0 opacity-80 group-hover:opacity-100 transition-opacity" data-alt="Abstract image representing visa policy" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCrV4FINmE7RFgJj-qNm600aJ4xiK217jlIL6aGmHsbPyCzjAjDiKXe0Mrd4ddtn7ZaKq4Gr2IRwXeYpr6EiA1RVNwTsNyvhfeZWL-VYawcMcjsnpmHhx-OAJVR3gxukcuVZJBItUpQpdHEcF3PWDWIhCcifY-5qlmCxmGm-aOrEFNmNLzfSzkDPEg389vgj5nw5fcivqGCz5s9CdB6NlzcX89s4GEpC_EVaX5gATH9785GJ9kWqLgohfZ_lcF_eAN9Te5INoNrYMY');"></div>
+<div class="flex flex-col justify-center">
+<h5 class="text-xs font-bold text-white leading-tight mb-1 line-clamp-2">Understanding the new Proof of Funds requirements</h5>
+<p class="text-[10px] text-gray-500">3 days ago</p>
+</div>
+</a>
+</div>
+</div>
+<!-- Floating CTA for Sticky situations if needed, positioned inline here for desktop layout -->
+<div class="glass-panel p-4 rounded-xl text-center mt-4">
+<p class="text-xs text-gray-400 mb-3">Not sure if you qualify?</p>
+<button class="w-full py-2 rounded-lg border border-accent-gold/50 text-accent-gold hover:bg-accent-gold hover:text-black transition-all font-bold text-sm">
+                        Check Eligibility
+                    </button>
+</div>
+</div>
+</aside>
+</div>
+</body></html>

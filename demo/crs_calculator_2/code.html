@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CanadaPath AI - CRS Calculator - Enhanced</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1f3b61", // Navy Blue
+                        "primary-light": "#2d5283",
+                        "primary-dark": "#0f2541",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#0b1120", // Deep Charcoal
+                        "maple-red": "#dc2626", // Slightly deeper red
+                        "gold": "#fbbf24", // Amber/Gold
+                        "gold-glow": "rgba(251, 191, 36, 0.4)",
+                        "glass-border": "rgba(255, 255, 255, 0.08)",
+                        "glass-bg": "rgba(15, 23, 42, 0.6)",
+                    },
+                    fontFamily: {
+                        "sans": ["Plus Jakarta Sans", "Inter", "sans-serif"],
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                    boxShadow: {
+                        "glass": "0 8px 32px 0 rgba(0, 0, 0, 0.37)",
+                        "glow-gold": "0 0 20px -5px rgba(251, 191, 36, 0.5)",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b1120;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(31, 59, 97, 0.25) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(220, 38, 38, 0.08) 0%, transparent 50%);
+            color: white;
+        }.glass-panel {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+        }
+        .glass-panel-light {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .glass-input {
+            background: rgba(2, 6, 23, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .glass-input:focus {
+            background: rgba(2, 6, 23, 0.8);
+            border-color: rgba(251, 191, 36, 0.5);box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.2);
+        }input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #fbbf24;
+            border: 2px solid #0f172a;
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+            transition: transform 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+        }.toggle-checkbox:checked {
+            right: 0;
+            border-color: #fbbf24;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #fbbf24;
+        }@keyframes dash {
+            from { stroke-dasharray: 0, 100; }
+            to { stroke-dasharray: 45, 100; }}
+        .circle-progress {
+            stroke-dasharray: 45, 100;}::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b1120; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f3b61; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2d5283; 
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col overflow-x-hidden text-slate-200 selection:bg-gold selection:text-primary-dark">
+<header class="sticky top-0 z-50 w-full glass-panel border-b-0 border-b-glass-border">
+<div class="px-6 md:px-10 py-4 flex items-center justify-between max-w-[1440px] mx-auto">
+<div class="flex items-center gap-4 text-white">
+<div class="size-9 bg-gradient-to-br from-maple-red to-red-800 rounded-lg flex items-center justify-center shadow-lg shadow-red-900/40">
+<span class="material-symbols-outlined !text-xl text-white">local_florist</span>
+</div>
+<h2 class="text-white text-xl font-bold leading-tight tracking-tight">CanadaPath <span class="text-gold">AI</span></h2>
+</div>
+<div class="flex items-center gap-8">
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-slate-300 hover:text-white hover:text-gold transition-colors text-sm font-semibold" href="#">Home</a>
+<a class="text-white text-sm font-semibold border-b-2 border-gold pb-0.5 shadow-[0_4px_12px_rgba(251,191,36,0.3)]" href="#">Tools</a>
+<a class="text-slate-300 hover:text-white hover:text-gold transition-colors text-sm font-semibold" href="#">My Profile</a>
+</nav>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-primary cursor-pointer shadow-glass" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAciJRB2s3xIBFcLHVewVUymYS8jhsYT6Mjn1BCUkNjvhIRqLrnjU9MY_ryi-4uuAilxJlk60dz_aOtmMjA5VcSnFXIUCg2TbuHgpuy7GdiNYkgI0wMbE02JWO7ly8x1kWvs1bK8IsJI29smOFIDSnpU3K7bD_5owe5ltItTMZtC4cvVZuF4sXPHMuuwKmr8s9fohEPNKl5dcJlP-0HkMACiuILtSiwEKwR1sjO4pEKrvfCV84jg2b2YntA9sR0zOCvCt7gJ7G2P5U");'></div>
+</div>
+</div>
+</header>
+<main class="flex-grow flex flex-col items-center py-8 px-4 md:px-8 w-full max-w-[1440px] mx-auto">
+<div class="w-full mb-10 text-center relative">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-primary/20 rounded-full blur-[100px] pointer-events-none z-0"></div>
+<div class="relative z-10">
+<h1 class="text-4xl md:text-5xl font-extrabold text-white mb-3 tracking-tight">CRS <span class="text-transparent bg-clip-text bg-gradient-to-r from-gold to-yellow-600">Calculator</span></h1>
+<p class="text-slate-400 max-w-2xl mx-auto text-lg">Real-time scoring powered by AI. Determine your eligibility for Canadian Express Entry.</p>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full">
+<div class="col-span-12 lg:col-span-8 flex flex-col gap-6">
+<div class="glass-panel rounded-2xl p-8 relative overflow-hidden group border-t-2 border-t-white/10">
+<div class="absolute top-0 right-0 p-4 opacity-50">
+<span class="material-symbols-outlined text-6xl text-white/5">person_celebrate</span>
+</div>
+<h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+<span class="w-1 h-6 bg-gold rounded-full"></span>
+                    Core Human Capital
+                </h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+<div class="col-span-1 md:col-span-2 space-y-4">
+<div class="flex justify-between items-end">
+<label class="text-slate-300 font-medium text-sm uppercase tracking-wider">Age</label>
+<span class="text-gold font-bold text-xl bg-gold/10 px-3 py-1 rounded-lg border border-gold/20">29</span>
+</div>
+<input class="w-full" max="50" min="18" type="range" value="29"/>
+<div class="flex justify-between text-xs text-slate-500 font-medium">
+<span>18</span>
+<span>25</span>
+<span>35</span>
+<span>45+</span>
+</div>
+<p class="text-xs text-slate-400 mt-1"><span class="text-gold">*</span> Maximum points (110) are awarded for ages 20-29.</p>
+</div>
+<div class="space-y-2">
+<label class="text-slate-300 font-medium text-sm uppercase tracking-wider">Marital Status</label>
+<div class="relative">
+<select class="glass-input w-full h-12 rounded-xl px-4 appearance-none cursor-pointer text-white font-medium">
+<option value="single">Single / Never Married</option>
+<option value="married">Married</option>
+<option value="common-law">Common-Law</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">expand_more</span>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-slate-300 font-medium text-sm uppercase tracking-wider">Level of Education</label>
+<div class="relative">
+<select class="glass-input w-full h-12 rounded-xl px-4 appearance-none cursor-pointer text-white font-medium">
+<option>Master's Degree OR Professional Degree</option>
+<option>PhD</option>
+<option>Two or more certificates/degrees</option>
+<option>Bachelor's Degree (3+ years)</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+<div class="glass-panel rounded-2xl p-8 border-t-2 border-t-white/10">
+<div class="flex justify-between items-start mb-8">
+<h3 class="text-xl font-bold text-white flex items-center gap-2">
+<span class="w-1 h-6 bg-blue-400 rounded-full"></span>
+                        Language Proficiency (IELTS/CELPIP)
+                    </h3>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-white/5 rounded-lg text-xs font-medium text-slate-300 border border-white/10 cursor-pointer hover:bg-white/10 hover:text-white transition-colors">IELTS</span>
+<span class="px-3 py-1 bg-primary text-white rounded-lg text-xs font-medium border border-primary-light shadow-lg shadow-primary/30 cursor-pointer">CELPIP</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+<div class="space-y-3">
+<div class="flex justify-between">
+<label class="text-sm font-medium text-slate-300">Reading Score</label>
+<span class="text-white font-bold">CLB 9</span>
+</div>
+<input class="w-full" max="12" min="1" type="range" value="9"/>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between">
+<label class="text-sm font-medium text-slate-300">Writing Score</label>
+<span class="text-white font-bold">CLB 9</span>
+</div>
+<input class="w-full" max="12" min="1" type="range" value="9"/>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between">
+<label class="text-sm font-medium text-slate-300">Listening Score</label>
+<span class="text-white font-bold">CLB 10</span>
+</div>
+<input class="w-full" max="12" min="1" type="range" value="10"/>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between">
+<label class="text-sm font-medium text-slate-300">Speaking Score</label>
+<span class="text-white font-bold">CLB 9</span>
+</div>
+<input class="w-full" max="12" min="1" type="range" value="9"/>
+</div>
+</div>
+</div>
+<div class="glass-panel rounded-2xl p-8 border-t-2 border-t-white/10">
+<h3 class="text-xl font-bold text-white mb-8 flex items-center gap-2">
+<span class="w-1 h-6 bg-green-400 rounded-full"></span>
+                    Work Experience
+                </h3>
+<div class="space-y-8">
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<div class="flex flex-col">
+<label class="text-white font-semibold text-base">Canadian Work Experience</label>
+<span class="text-slate-400 text-xs">Full-time skilled work in Canada within last 10 years</span>
+</div>
+<span class="text-green-400 font-bold text-lg bg-green-900/20 px-3 py-1 rounded-lg border border-green-500/20">1 Year</span>
+</div>
+<div class="relative pt-1">
+<input class="w-full" max="5" min="0" type="range" value="1"/>
+<div class="flex justify-between text-xs text-slate-500 font-medium mt-2">
+<span>None</span>
+<span>1 Yr</span>
+<span>2 Yrs</span>
+<span>3 Yrs</span>
+<span>4 Yrs</span>
+<span>5+ Yrs</span>
+</div>
+</div>
+</div>
+<div class="h-px bg-white/5 w-full"></div>
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<div class="flex flex-col">
+<label class="text-white font-semibold text-base">Foreign Work Experience</label>
+<span class="text-slate-400 text-xs">Skilled work outside Canada in last 10 years</span>
+</div>
+<span class="text-green-400 font-bold text-lg bg-green-900/20 px-3 py-1 rounded-lg border border-green-500/20">3+ Years</span>
+</div>
+<div class="relative pt-1">
+<input class="w-full" max="3" min="0" type="range" value="3"/>
+<div class="flex justify-between text-xs text-slate-500 font-medium mt-2">
+<span>None</span>
+<span>1 Yr</span>
+<span>2 Yrs</span>
+<span>3+ Yrs</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="glass-panel rounded-2xl p-8 border-t-2 border-t-white/10">
+<h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+<span class="w-1 h-6 bg-maple-red rounded-full"></span>
+                    Additional Points
+                </h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 hover:border-gold/30 transition-colors">
+<div class="flex items-center gap-4">
+<div class="p-2 bg-purple-500/20 rounded-lg text-purple-300">
+<span class="material-symbols-outlined">map</span>
+</div>
+<div>
+<p class="text-white font-semibold">Provincial Nomination (PNP)</p>
+<p class="text-slate-400 text-xs">Increases score by 600 points</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-12 h-7 bg-slate-800 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gold/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-300 after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-gold peer-checked:after:bg-white peer-checked:after:border-white"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 hover:border-gold/30 transition-colors">
+<div class="flex items-center gap-4">
+<div class="p-2 bg-blue-500/20 rounded-lg text-blue-300">
+<span class="material-symbols-outlined">family_restroom</span>
+</div>
+<div>
+<p class="text-white font-semibold">Sibling in Canada</p>
+<p class="text-slate-400 text-xs">Citizen or Permanent Resident (18+)</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-12 h-7 bg-slate-800 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gold/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-300 after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-gold peer-checked:after:bg-white peer-checked:after:border-white"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 hover:border-gold/30 transition-colors">
+<div class="flex items-center gap-4">
+<div class="p-2 bg-green-500/20 rounded-lg text-green-300">
+<span class="material-symbols-outlined">work_history</span>
+</div>
+<div>
+<p class="text-white font-semibold">Valid Job Offer (LMIA)</p>
+<p class="text-slate-400 text-xs">Supported by LMIA or exempt</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-12 h-7 bg-slate-800 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gold/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-300 after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-gold peer-checked:after:bg-white peer-checked:after:border-white"></div>
+</label>
+</div>
+</div>
+</div>
+</div>
+<div class="col-span-12 lg:col-span-4 min-w-0">
+<div class="sticky top-28 flex flex-col gap-6">
+<div class="glass-panel rounded-2xl p-6 md:p-8 flex flex-col items-center relative overflow-hidden shadow-2xl shadow-black/50 border-t-4 border-t-gold">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-primary/30 rounded-full blur-[60px] pointer-events-none"></div>
+<div class="absolute bottom-0 right-0 w-32 h-32 bg-gold/10 rounded-full blur-[50px] pointer-events-none"></div>
+<h2 class="text-slate-300 text-sm font-bold uppercase tracking-widest mb-6 relative z-10">Total CRS Score</h2>
+<div class="relative size-64 mb-6 z-10">
+<svg class="size-full -rotate-90" viewBox="0 0 36 36">
+<path class="text-slate-700/50" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="2.5"></path>
+<path class="text-gold circle-progress drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="40, 100" stroke-linecap="round" stroke-width="2.5"></path>
+</svg>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center flex flex-col items-center">
+<span class="text-6xl font-black text-white tracking-tight drop-shadow-lg">482</span>
+<span class="text-slate-400 text-sm font-medium mt-1">/ 1200</span>
+</div>
+</div>
+<div class="w-full space-y-3 relative z-10">
+<div class="flex justify-between items-center text-sm py-2 border-b border-white/5">
+<span class="text-slate-400 flex items-center gap-2">
+<span class="size-2 rounded-full bg-gold shadow-[0_0_8px_rgba(251,191,36,0.8)]"></span>
+                                Core Factors
+                            </span>
+<span class="font-bold text-white">360</span>
+</div>
+<div class="flex justify-between items-center text-sm py-2 border-b border-white/5">
+<span class="text-slate-400 flex items-center gap-2">
+<span class="size-2 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]"></span>
+                                Spouse Factors
+                            </span>
+<span class="font-bold text-white">0</span>
+</div>
+<div class="flex justify-between items-center text-sm py-2 border-b border-white/5">
+<span class="text-slate-400 flex items-center gap-2">
+<span class="size-2 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.8)]"></span>
+                                Skill Transferability
+                            </span>
+<span class="font-bold text-white">107</span>
+</div>
+<div class="flex justify-between items-center text-sm py-2">
+<span class="text-slate-400 flex items-center gap-2">
+<span class="size-2 rounded-full bg-maple-red shadow-[0_0_8px_rgba(220,38,38,0.8)]"></span>
+                                Additional Points
+                            </span>
+<span class="font-bold text-white">15</span>
+</div>
+</div>
+<button class="w-full mt-8 bg-gradient-to-r from-primary to-primary-light hover:to-blue-600 text-white font-bold py-3.5 px-4 rounded-xl transition-all duration-300 shadow-[0_8px_20px_-5px_rgba(31,59,97,0.5)] flex items-center justify-center gap-2 border border-white/10 group">
+<span>View Detailed Report</span>
+<span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+<div class="glass-panel-light rounded-2xl p-5 border border-gold/20 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-gold/10 to-transparent pointer-events-none"></div>
+<div class="flex items-start gap-3 relative z-10">
+<span class="material-symbols-outlined text-gold">lightbulb</span>
+<div>
+<h4 class="text-gold font-bold text-sm mb-1">Score Insight</h4>
+<p class="text-slate-300 text-xs leading-relaxed">
+                                You are <strong class="text-white">43 points</strong> below the latest cutoff. Enabling "Provincial Nomination" would boost you well above the threshold.
+                            </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+
+</body></html>

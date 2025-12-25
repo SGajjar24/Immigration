@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CanadaPath AI - Interactive Provincial Map</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f20d20",
+                        "background-light": "#f8f5f6",
+                        "background-dark": "#181111", // Using the dark shade from components
+                        "glass-surface": "rgba(57, 40, 41, 0.4)",
+                        "glass-border": "rgba(255, 255, 255, 0.08)",
+                        "gold": "#D4AF37",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"],
+                        "sans": ["Plus Jakarta Sans", "sans-serif"],
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for horizontal scrolling areas if needed */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .glass-panel {
+            background: rgba(57, 40, 41, 0.3);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card-hover:hover {
+            background: rgba(57, 40, 41, 0.6);
+            border-color: rgba(242, 13, 32, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-white font-display overflow-x-hidden selection:bg-primary selection:text-white">
+<div class="relative flex min-h-screen w-full flex-col group/design-root">
+<!-- Ambient Background Glows -->
+<div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+<div class="absolute top-[-20%] left-[20%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-[#392829]/30 rounded-full blur-[100px]"></div>
+</div>
+<!-- Navigation -->
+<header class="sticky top-0 z-50 w-full border-b border-glass-border glass-panel">
+<div class="layout-container flex h-full grow flex-col">
+<div class="px-6 md:px-10 lg:px-40 flex justify-center py-3">
+<div class="layout-content-container flex w-full max-w-[1200px] items-center justify-between">
+<div class="flex items-center gap-4 text-white">
+<div class="size-8 text-primary">
+<span class="material-symbols-outlined" style="font-size: 32px;">policy</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">CanadaPath AI</h2>
+</div>
+<div class="hidden md:flex flex-1 justify-end gap-8 items-center">
+<div class="flex items-center gap-6">
+<a class="text-white/80 hover:text-white text-sm font-medium transition-colors" href="#">Home</a>
+<a class="text-white text-sm font-bold border-b-2 border-primary py-1" href="#">PNP Map</a>
+<a class="text-white/80 hover:text-white text-sm font-medium transition-colors" href="#">Express Entry</a>
+<a class="text-white/80 hover:text-white text-sm font-medium transition-colors" href="#">Assessment</a>
+</div>
+<div class="flex gap-3">
+<button class="flex cursor-pointer items-center justify-center rounded-lg h-9 px-4 bg-transparent border border-white/20 hover:border-white/40 text-white text-sm font-bold transition-all">
+                                    Sign In
+                                </button>
+<button class="flex cursor-pointer items-center justify-center rounded-lg h-9 px-4 bg-primary hover:bg-red-700 text-white text-sm font-bold shadow-lg shadow-primary/20 transition-all">
+                                    Get Started
+                                </button>
+</div>
+</div>
+<!-- Mobile Menu Icon -->
+<div class="md:hidden text-white cursor-pointer">
+<span class="material-symbols-outlined">menu</span>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="relative z-10 flex flex-1 flex-col items-center px-4 md:px-10 lg:px-40 py-8 md:py-12">
+<div class="flex w-full max-w-[1200px] flex-col gap-10">
+<!-- Header & Search -->
+<div class="flex flex-col gap-8">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+<div class="flex flex-col gap-3 max-w-2xl">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-gold animate-pulse text-sm">auto_awesome</span>
+<span class="text-gold text-xs font-bold uppercase tracking-wider">AI-Powered Insights</span>
+</div>
+<h1 class="text-white text-4xl md:text-5xl font-black leading-[1.1] tracking-[-0.033em]">
+                                Explore Provincial <br class="hidden md:block"/> <span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/50">Pathways</span>
+</h1>
+<p class="text-[#ba9c9e] text-lg font-normal leading-relaxed max-w-lg">
+                                Navigate Canada's 80+ Provincial Nominee Programs. Select a province to view requirements, recent draws, and calculate your eligibility instantly.
+                            </p>
+</div>
+<!-- Search Bar -->
+<div class="w-full md:w-auto md:min-w-[400px]">
+<label class="flex flex-col w-full group">
+<div class="flex w-full items-center rounded-xl bg-[#392829]/40 border border-white/10 h-14 px-4 focus-within:border-primary/50 focus-within:bg-[#392829]/60 transition-all">
+<span class="material-symbols-outlined text-[#ba9c9e] group-focus-within:text-white transition-colors">search</span>
+<input class="w-full bg-transparent border-none text-white placeholder:text-[#ba9c9e]/70 focus:ring-0 text-base px-3 h-full" placeholder='Ask AI: "Best PNP for tech workers?"'/>
+<button class="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-white text-[20px]">mic</span>
+</button>
+</div>
+</label>
+</div>
+</div>
+<!-- Stats Row -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="glass-panel rounded-xl p-5 flex flex-col gap-1 hover:border-white/20 transition-colors">
+<div class="flex items-center gap-2 text-[#ba9c9e] text-sm font-medium mb-1">
+<span class="material-symbols-outlined text-[18px]">lock_open</span>
+                                Open Streams
+                            </div>
+<p class="text-white text-3xl font-bold">42</p>
+</div>
+<div class="glass-panel rounded-xl p-5 flex flex-col gap-1 hover:border-white/20 transition-colors">
+<div class="flex items-center gap-2 text-[#ba9c9e] text-sm font-medium mb-1">
+<span class="material-symbols-outlined text-[18px]">event_available</span>
+                                Latest Draw
+                            </div>
+<div class="flex items-baseline gap-2">
+<p class="text-white text-3xl font-bold">BC</p>
+<span class="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full">Today</span>
+</div>
+</div>
+<div class="glass-panel rounded-xl p-5 flex flex-col gap-1 hover:border-white/20 transition-colors">
+<div class="flex items-center gap-2 text-[#ba9c9e] text-sm font-medium mb-1">
+<span class="material-symbols-outlined text-[18px]">mark_email_unread</span>
+                                Invites Issued
+                            </div>
+<p class="text-white text-3xl font-bold">2,340</p>
+</div>
+<div class="glass-panel rounded-xl p-5 flex flex-col gap-1 hover:border-white/20 transition-colors relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-r from-gold/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex items-center gap-2 text-[#ba9c9e] text-sm font-medium mb-1">
+<span class="material-symbols-outlined text-[18px] text-gold">star</span>
+                                Top Match
+                            </div>
+<p class="text-white text-2xl font-bold truncate">Alberta Tech</p>
+</div>
+</div>
+</div>
+<!-- Filters -->
+<div class="w-full overflow-x-auto hide-scrollbar pb-2">
+<div class="flex gap-3 min-w-max">
+<button class="flex h-10 items-center justify-center gap-2 rounded-full bg-primary px-5 text-white shadow-lg shadow-primary/25 transition-transform active:scale-95">
+<span class="text-sm font-bold">All Provinces</span>
+</button>
+<button class="flex h-10 items-center justify-center gap-2 rounded-full glass-panel hover:bg-white/10 px-5 text-white transition-all active:scale-95">
+<span class="material-symbols-outlined text-[18px]">computer</span>
+<span class="text-sm font-medium">Tech Streams</span>
+</button>
+<button class="flex h-10 items-center justify-center gap-2 rounded-full glass-panel hover:bg-white/10 px-5 text-white transition-all active:scale-95">
+<span class="material-symbols-outlined text-[18px]">school</span>
+<span class="text-sm font-medium">Student Pathways</span>
+</button>
+<button class="flex h-10 items-center justify-center gap-2 rounded-full glass-panel hover:bg-white/10 px-5 text-white transition-all active:scale-95">
+<span class="material-symbols-outlined text-[18px]">rocket_launch</span>
+<span class="text-sm font-medium">Express Entry</span>
+</button>
+<button class="flex h-10 items-center justify-center gap-2 rounded-full glass-panel hover:bg-white/10 px-5 text-white transition-all active:scale-95">
+<span class="material-symbols-outlined text-[18px]">translate</span>
+<span class="text-sm font-medium">French Speaking</span>
+</button>
+<button class="flex h-10 items-center justify-center gap-2 rounded-full glass-panel hover:bg-white/10 px-5 text-white transition-all active:scale-95">
+<span class="material-symbols-outlined text-[18px]">business_center</span>
+<span class="text-sm font-medium">Investors</span>
+</button>
+</div>
+</div>
+<!-- Province Grid (Replaces Map) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Card: Ontario -->
+<div class="glass-panel glass-card-hover rounded-2xl p-6 flex flex-col gap-5 transition-all duration-300 group cursor-pointer relative overflow-hidden">
+<!-- Decorative top gradient -->
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-transparent"></div>
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-xl bg-white/5 flex items-center justify-center text-2xl font-bold border border-white/10 text-white shadow-inner">
+                                    ON
+                                </div>
+<div>
+<h3 class="text-xl font-bold text-white leading-tight">Ontario</h3>
+<p class="text-sm text-[#ba9c9e]">OINP</p>
+</div>
+</div>
+<span class="flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 text-xs font-bold text-emerald-400">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                Active
+                            </span>
+</div>
+<!-- Mini Visual representation -->
+<div class="h-24 w-full rounded-lg relative overflow-hidden bg-gradient-to-b from-white/5 to-transparent border border-white/5">
+<div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+<div class="absolute bottom-3 left-3 flex gap-2">
+<span class="px-2 py-0.5 rounded bg-black/40 text-[10px] text-white/70 backdrop-blur-sm">CRS: 460+</span>
+<span class="px-2 py-0.5 rounded bg-black/40 text-[10px] text-white/70 backdrop-blur-sm">NOC: Tech</span>
+</div>
+<img class="absolute w-full h-full object-cover opacity-0" data-alt="Abstract subtle geographic pattern representing Ontario's region" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABAt2oE_7s5BRzHZBVPlPCSBcPhOVLQ3PfdaeWH0Q6EByLtHdtBhckw8nfcINgl5cNihd2YAa_MpHUiZ8t3_0R1_7alRYHvfXdBxN8BUTYE6tQCRueJYlfCYrIbMkm3MIxIsEPazrXgG21FvhiI93e5UrfIpzTt-zhpYo2ZM194z8TDbN8NfT9czBUXvmpP8UqnxJrlJwwXTONtna4Hak9db1DkWsqwbVVS1nSCPVVw1LeBFrUglJfJowz9Q2nr7c0h7HPvkNCf1s"/>
+</div>
+<div class="flex flex-col gap-2 mt-auto">
+<div class="flex justify-between items-center py-2 border-b border-white/5">
+<span class="text-sm text-[#ba9c9e]">Human Capital Priorities</span>
+<span class="text-xs font-medium text-emerald-400">Open</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-white/5">
+<span class="text-sm text-[#ba9c9e]">French-Speaking Worker</span>
+<span class="text-xs font-medium text-white/60">Paused</span>
+</div>
+</div>
+<button class="w-full mt-2 flex items-center justify-center gap-2 rounded-lg bg-white/5 hover:bg-primary py-3 text-sm font-bold text-white transition-all group-hover:bg-primary">
+                            View Streams
+                            <span class="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+</button>
+</div>
+<!-- Card: British Columbia -->
+<div class="glass-panel glass-card-hover rounded-2xl p-6 flex flex-col gap-5 transition-all duration-300 group cursor-pointer relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-transparent"></div>
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-xl bg-white/5 flex items-center justify-center text-2xl font-bold border border-white/10 text-white shadow-inner">
+                                    BC
+                                </div>
+<div>
+<h3 class="text-xl font-bold text-white leading-tight">British Columbia</h3>
+<p class="text-sm text-[#ba9c9e]">BC PNP</p>
+</div>
+</div>
+<span class="flex items-center gap-1 rounded-full bg-gold/10 border border-gold/20 px-2.5 py-1 text-xs font-bold text-gold">
+<span class="material-symbols-outlined text-[12px] text-gold">bolt</span>
+                                Draw Weekly
+                            </span>
+</div>
+<div class="h-24 w-full rounded-lg relative overflow-hidden bg-gradient-to-b from-white/5 to-transparent border border-white/5">
+<div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+<div class="absolute bottom-3 left-3 flex gap-2">
+<span class="px-2 py-0.5 rounded bg-black/40 text-[10px] text-white/70 backdrop-blur-sm">Tech Pilot</span>
+</div>
+<img class="absolute w-full h-full object-cover opacity-0" data-alt="Abstract gradient showing mountains and ocean tones for BC" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYqQPMgNBbIsJ-7V0EwfoixvR9MtP2X1ylTuy7OD6Wa4Dp24F7viZqliQ6mkdZfLmFZBtjLt3i67d29ZjX-yKHbY3A1uBzNqWAqKzqgxs9RFL7deP-GBINH4kAuMVVNiYiWg7XwCDEn34AdFitBiYT1UmKRIAJfjK7z2yclXTaUlKCHjdpuxEfYbm_N3WpQHIkVdhXdyM8dfhLNrkiDuN7-vZf17k46t6wb4DkcHlxccJFiqxAxgaFeC4Ug1ahvcanE9h5qxN8fIM"/>
+</div>
+<div class="flex flex-col gap-2 mt-auto">
+<div class="flex justify-between items-center py-2 border-b border-white/5">
+<span class="text-sm text-[#ba9c9e]">BC Tech</span>
+<span class="text-xs font-medium text-emerald-400">Open</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-white/5">
+<span class="text-sm text-[#ba9c9e]">Skilled Worker</span>
+<span class="text-xs font-medium text-emerald-400">Open</span>
+</div>
+</div>
+<button class="w-full mt-2 flex items-center justify-center gap-2 rounded-lg bg-white/5 hover:bg-primary py-3 text-sm font-bold text-white transition-all group-hover:bg-primary">
+                            View Streams
+                            <span class="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+</button>
+</div>
+<!-- Card: Alberta -->
+<div class="glass-panel glass-card-hover rounded-2xl p-6 flex flex-col gap-5 transition-all duration-300 group cursor-pointer relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-transparent"></div>
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-xl bg-white/5 flex items-center justify-center text-2xl font-bold border border-white/10 text-white shadow-inner">
+                                    AB
+                                </div>
+<div>
+<h3 class="text-xl font-bold text-white leading-tight">Alberta</h3>
+<p class="text-sm text-[#ba9c9e]">AAIP</p>
+</div>
+</div>
+<span class="flex items-center gap-1 rounded-full bg-white/5 border border-white/10 px-2.5 py-1 text-xs font-bold text-white/70">
+                                High Demand
+                            </span>
+</div>
+<div class="h-24 w-full rounded-lg relative overflow-hidden bg-gradient-to-b from-white/5 to-transparent border border-white/5">
+<div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+<div class="absolute bottom-3 left-3 flex gap-2">
+<span class="px-2 py-0.5 rounded bg-black/40 text-[10px] text-white/70 backdrop-blur-sm">No CRS Cutoff</span>
+</div>
+<img class="absolute w-full h-full object-cover opacity-0" data-alt="Abstract prairies and mountains gradient for Alberta" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTXETq9BjEllPRc55iib4lb9ptcXKq1hvGE_Ti60vMatdaFh6yVv2t19HaLtQdr-_dKy4zNzylMcl7ueF_c1syw8tWnXOB-f18N55CRsPYwB9Fb7MT_H_7vo2M8RS7dI9kzTfGwcZ_KY6H8boimNN09jn3JwnBXjJIU1G788avl6qjXMb1VjkE5l2eVaycW8of7fhlr-3wl2RwlhaSVuNnoW9WGtarLvzICdHv3Di24CftDckajFOVxGhTWqRVEhk_xvAQ07C3-ZM"/>
+</div>
+<div class="flex flex-col gap-2 mt-auto">
+<div class="flex justify-between items-center py-2 border-b border-white/5">
+<span class="text-sm text-[#ba9c9e]">Opportunity Stream</span>
+<span class="text-xs font-medium text-emerald-400">Open</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-white/5">
+<span class="text-sm text-[#ba9c9e]">Express Entry</span>
+<span class="text-xs font-medium text-white/60">Targeted</span>
+</div>
+</div>
+<button class="w-full mt-2 flex items-center justify-center gap-2 rounded-lg bg-white/5 hover:bg-primary py-3 text-sm font-bold text-white transition-all group-hover:bg-primary">
+                            View Streams
+                            <span class="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+</button>
+</div>
+<!-- Card: Manitoba -->
+<div class="glass-panel glass-card-hover rounded-2xl p-6 flex flex-col gap-5 transition-all duration-300 group cursor-pointer relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-transparent"></div>
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-xl bg-white/5 flex items-center justify-center text-2xl font-bold border border-white/10 text-white shadow-inner">
+                                    MB
+                                </div>
+<div>
+<h3 class="text-xl font-bold text-white leading-tight">Manitoba</h3>
+<p class="text-sm text-[#ba9c9e]">MPNP</p>
+</div>
+</div>
+<span class="flex items-center gap-1 rounded-full bg-white/5 border border-white/10 px-2.5 py-1 text-xs font-bold text-white/70">
+                                Family Ties
+                            </span>
+</div>
+<div class="h-24 w-full rounded-lg relative overflow-hidden bg-gradient-to-b from-white/5 to-transparent border border-white/5">
+<div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+<div class="absolute bottom-3 left-3 flex gap-2">
+<span class="px-2 py-0.5 rounded bg-black/40 text-[10px] text-white/70 backdrop-blur-sm">Regional</span>
+</div>
+<img class="absolute w-full h-full object-cover opacity-0" data-alt="Abstract plains gradient for Manitoba" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTYkAOKqacRJiCOvehVawZNsRsn1DjgQPxcfPgZCbX1AkBRhCoBBmLFc7HT4EfROjSYA6hZkqyfrxx6AwmIfgHHdIv2dHNryiYtnsK8j6umWhRhxXnwfTkqFbN7EQMfg_RVilAN2g5KvV45Ns4u2bei1omzNLcgZYYexFZU7KBOiIW-wcCq9zYcs4_gQ7Em1EDBwHkNFIZR8xqhq0MYW7jFMWGIElJjmfE76NgPtRKuWfB6wrwfVxoAP_Rrd6EKq5S51ic8_STxTw"/>
+</div>
+<div class="flex flex-col gap-2 mt-auto">
+<div class="flex justify-between items-center py-2 border-b border-white/5">
+<span class="text-sm text-[#ba9c9e]">Skilled Worker Overseas</span>
+<span class="text-xs font-medium text-emerald-400">Open</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-white/5">
+<span class="text-sm text-[#ba9c9e]">Intl Education</span>
+<span class="text-xs font-medium text-emerald-400">Open</span>
+</div>
+</div>
+<button class="w-full mt-2 flex items-center justify-center gap-2 rounded-lg bg-white/5 hover:bg-primary py-3 text-sm font-bold text-white transition-all group-hover:bg-primary">
+                            View Streams
+                            <span class="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+</button>
+</div>
+<!-- Card: Saskatchewan -->
+<div class="glass-panel glass-card-hover rounded-2xl p-6 flex flex-col gap-5 transition-all duration-300 group cursor-pointer relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-600 to-transparent"></div>
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-xl bg-white/5 flex items-center justify-center text-2xl font-bold border border-white/10 text-white shadow-inner">
+                                    SK
+                                </div>
+<div>
+<h3 class="text-xl font-bold text-white leading-tight">Saskatchewan</h3>
+<p class="text-sm text-[#ba9c9e]">SINP</p>
+</div>
+</div>
+<span class="flex items-center gap-1 rounded-full bg-white/5 border border-white/10 px-2.5 py-1 text-xs font-bold text-white/70">
+                                Easy Points
+                            </span>
+</div>
+<div class="h-24 w-full rounded-lg relative overflow-hidden bg-gradient-to-b from-white/5 to-transparent border border-white/5">
+<div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+<div class="absolute bottom-3 left-3 flex gap-2">
+<span class="px-2 py-0.5 rounded bg-black/40 text-[10px] text-white/70 backdrop-blur-sm">Occupation List</span>
+</div>
+<img class="absolute w-full h-full object-cover opacity-0" data-alt="Abstract prairie gradient for Saskatchewan" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIgXxqZqEf3LILGLmPPsOvxeGCWrhn-9gAS32LYRl7OpduZydumamGbaKRm1dkr4ZBoPq6ZQpWJwrejfFilQxKgGn8Eb7Z4YHikfOvQ42aVKMud91YCyQZgOR4_aYI-KkfYe8zcX-gJK1_Po9NDxH15ad70crFxWeD9AxvK9j6eTSAU77kYObfaZWahqKzAUSU7fT9cYydWSSyvXp7Mll1ky1_f_6rCb1VxJNZXwQMqCa8b05KaDRXYsxqwzfOF1lqdxPJLxvokBc"/>
+</div>
+<div class="flex flex-col gap-2 mt-auto">
+<div class="flex justify-between items-center py-2 border-b border-white/5">
+<span class="text-sm text-[#ba9c9e]">Occupation In-Demand</span>
+<span class="text-xs font-medium text-emerald-400">Open</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-white/5">
+<span class="text-sm text-[#ba9c9e]">Express Entry</span>
+<span class="text-xs font-medium text-emerald-400">Open</span>
+</div>
+</div>
+<button class="w-full mt-2 flex items-center justify-center gap-2 rounded-lg bg-white/5 hover:bg-primary py-3 text-sm font-bold text-white transition-all group-hover:bg-primary">
+                            View Streams
+                            <span class="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+</button>
+</div>
+<!-- Card: Nova Scotia (Inactive example) -->
+<div class="glass-panel glass-card-hover rounded-2xl p-6 flex flex-col gap-5 transition-all duration-300 group cursor-pointer relative overflow-hidden opacity-90">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-700 to-transparent"></div>
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-xl bg-white/5 flex items-center justify-center text-2xl font-bold border border-white/10 text-white shadow-inner">
+                                    NS
+                                </div>
+<div>
+<h3 class="text-xl font-bold text-white leading-tight">Nova Scotia</h3>
+<p class="text-sm text-[#ba9c9e]">NSNP</p>
+</div>
+</div>
+<span class="flex items-center gap-1 rounded-full bg-red-500/10 border border-red-500/20 px-2.5 py-1 text-xs font-bold text-red-400">
+                                High Volume
+                            </span>
+</div>
+<div class="h-24 w-full rounded-lg relative overflow-hidden bg-gradient-to-b from-white/5 to-transparent border border-white/5">
+<div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+<div class="absolute bottom-3 left-3 flex gap-2">
+<span class="px-2 py-0.5 rounded bg-black/40 text-[10px] text-white/70 backdrop-blur-sm">Atlantic</span>
+</div>
+<img class="absolute w-full h-full object-cover opacity-0" data-alt="Abstract ocean gradient for Nova Scotia" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhzrHjDZrsBWfFRWymjqYajMtjN0rCISmN50AW0q3XZ0BbnNvMTBputX64bWubbydkwey_CWz6lVVmV-ZegZZhXx8Cw84Tcx6yJXV-0-C_bRd8ledZggZV4eEw8rHNQnNpmUDQYa5G53TWWrhnKVmxzTq0jkjgf3CsFtJvWNpcUcSRWA1-FapRL1jO8H7O3wb_k4_CtJPxP1PBgAcpuVVwyotcRprz7tA49pAaTDKETCh9mnsAI704I9_iWxwoSicvNb3yLjv84A0"/>
+</div>
+<div class="flex flex-col gap-2 mt-auto">
+<div class="flex justify-between items-center py-2 border-b border-white/5">
+<span class="text-sm text-[#ba9c9e]">Labour Market Priorities</span>
+<span class="text-xs font-medium text-white/60">Paused</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-white/5">
+<span class="text-sm text-[#ba9c9e]">Experience: Express Entry</span>
+<span class="text-xs font-medium text-emerald-400">Open</span>
+</div>
+</div>
+<button class="w-full mt-2 flex items-center justify-center gap-2 rounded-lg bg-white/5 hover:bg-primary py-3 text-sm font-bold text-white transition-all group-hover:bg-primary">
+                            View Streams
+                            <span class="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Floating AI Help Button -->
+<div class="fixed bottom-6 right-6 z-50">
+<button class="group flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-tr from-primary to-red-600 text-white shadow-xl shadow-red-900/40 transition-all hover:scale-110 hover:shadow-2xl">
+<span class="material-symbols-outlined text-3xl animate-pulse">smart_toy</span>
+<div class="absolute right-full mr-4 hidden rounded-lg bg-black/80 px-3 py-1.5 text-xs font-medium text-white backdrop-blur group-hover:block whitespace-nowrap">
+                            Need help choosing?
+                        </div>
+</button>
+</div>
+</div>
+</main>
+</div>
+<script>
+        // Simple animation for elements on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.glass-panel');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+        });
+    </script>
+</body></html>

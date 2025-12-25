@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Provincial Nominee Map - CanadaPath AI</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1f3b61",
+                        "primary-dark": "#0f2036",
+                        "accent-gold": "#D4AF37", 
+                        "accent-gold-light": "#FFD700",
+                        "accent-red": "#C70000",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#0f1115",
+                        "glass-surface": "rgba(31, 59, 97, 0.15)",
+                        "glass-border": "rgba(255, 255, 255, 0.08)",
+                        "navy-deep": "#0a0e14",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "heading": ["Plus Jakarta Sans", "sans-serif"],
+                    },
+                    boxShadow: {
+                        "glow-gold": "0 0 20px rgba(212, 175, 55, 0.3)",
+                        "glow-primary": "0 0 30px rgba(31, 59, 97, 0.4)",
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                    backdropBlur: {
+                        xs: '2px',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f1115; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f3b61; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2a4d7d; 
+        }
+        .glass-panel {
+            background: linear-gradient(145deg, rgba(20, 30, 45, 0.6) 0%, rgba(10, 14, 20, 0.8) 100%);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        .map-container {
+            perspective: 1000px;
+        }
+        .province-path {
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            transform-origin: center;
+            vector-effect: non-scaling-stroke;
+        }
+        .province-path:hover {
+            filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.4));
+            transform: scale(1.01) translateY(-2px);
+            stroke: #D4AF37;
+            stroke-width: 1.5px;
+            fill-opacity: 0.5;
+            z-index: 50;
+        }
+        .province-label {
+            pointer-events: none;
+            user-select: none;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+        .province-group:hover .province-label {
+            fill: #fff;
+            opacity: 1;
+            transform: translateY(-4px);
+            font-weight: 800;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+        }
+        .pulse-ring {
+            animation: pulse-ring 3s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            50% { opacity: 0; }
+            100% { transform: scale(2.2); opacity: 0; }
+        }
+        .bg-grid-pattern {
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }.province-path.active {
+            fill: rgba(212, 175, 55, 0.15);
+            stroke: #D4AF37;
+            stroke-width: 2px;
+            filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
+        }
+        .text-glow {
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-navy-deep font-display text-slate-200 antialiased overflow-hidden flex flex-col h-screen selection:bg-accent-gold selection:text-primary-dark">
+<header class="relative z-50 flex items-center justify-between whitespace-nowrap border-b border-glass-border bg-[#0a0e14]/90 backdrop-blur-md px-6 lg:px-8 py-4 h-18 shrink-0 shadow-lg shadow-black/20">
+<div class="flex items-center gap-3 group cursor-pointer">
+<div class="size-9 text-accent-gold flex items-center justify-center rounded-lg bg-primary/10 border border-primary/20 group-hover:bg-primary/20 transition-all">
+<span class="material-symbols-outlined !text-[28px]">travel_explore</span>
+</div>
+<div class="flex flex-col">
+<h2 class="text-white text-lg font-heading font-bold leading-none tracking-tight">CanadaPath <span class="text-accent-gold">AI</span></h2>
+<span class="text-[10px] text-slate-400 font-medium tracking-wider uppercase">Immigration Intelligence</span>
+</div>
+</div>
+<div class="flex flex-1 justify-end gap-6 lg:gap-8">
+<nav class="flex items-center gap-1 hidden lg:flex bg-primary/10 p-1 rounded-full border border-glass-border">
+<a class="px-4 py-1.5 rounded-full text-slate-300 hover:text-white text-sm font-medium transition-all hover:bg-white/5" href="#">Dashboard</a>
+<a class="px-4 py-1.5 rounded-full text-primary-dark bg-accent-gold shadow-[0_0_15px_rgba(212,175,55,0.4)] text-sm font-bold" href="#">PNP Map</a>
+<a class="px-4 py-1.5 rounded-full text-slate-300 hover:text-white text-sm font-medium transition-all hover:bg-white/5" href="#">Express Entry</a>
+<a class="px-4 py-1.5 rounded-full text-slate-300 hover:text-white text-sm font-medium transition-all hover:bg-white/5" href="#">Tools</a>
+</nav>
+<div class="flex items-center gap-4 border-l border-glass-border pl-6">
+<button class="relative flex items-center justify-center text-slate-300 hover:text-accent-gold transition-colors p-2 rounded-full hover:bg-white/5">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-accent-red rounded-full border border-[#0a0e14]"></span>
+</button>
+<div class="size-9 rounded-full bg-cover bg-center border-2 border-primary/30 ring-2 ring-transparent hover:ring-accent-gold/50 transition-all cursor-pointer" data-alt="User profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDQ7Fjwd88_4XDy6MUEGPzfWXqAcaEEd-Vv-ninJeRMADaAs5Iw5Xo0XV-4xOWnr6OBglX7MCJdBpYHvaY-KjKJJgXHoRCYnv3YkNBvelSGohofpKVdWJz3zSrOpYAsEVIgf_CSuocgwj1PcK1KRFSq6TsWPhbPs2PiEB1km8Qa7gLxyn7i_rppH5T_eXRZFjN73QAAuI8Ok5G81MJ_xzW759oLeyU_9nC7pe65HlQ1FEK8aRoRYLnL5pQYN2P_O_r5W6cNRBWfDuo");'></div>
+</div>
+</div>
+</header>
+<main class="flex-1 grid grid-cols-12 gap-0 overflow-hidden relative">
+<div class="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-primary/10 blur-[150px] rounded-full pointer-events-none z-0"></div>
+<div class="absolute bottom-[-10%] right-[-5%] w-[30%] h-[30%] bg-accent-gold/5 blur-[120px] rounded-full pointer-events-none z-0"></div>
+<div class="absolute top-[30%] right-[40%] w-[20%] h-[20%] bg-accent-red/5 blur-[100px] rounded-full pointer-events-none z-0"></div>
+<aside class="col-span-12 lg:col-span-3 xl:col-span-3 glass-panel border-r border-glass-border flex flex-col z-20 relative h-full backdrop-blur-xl">
+<div class="p-6 border-b border-glass-border bg-gradient-to-b from-white/5 to-transparent">
+<div class="flex items-center justify-between mb-2">
+<h1 class="text-xl font-heading font-bold text-white tracking-tight">Stream Explorer</h1>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-primary/30 text-accent-gold border border-accent-gold/20">BETA</span>
+</div>
+<p class="text-slate-400 text-xs leading-relaxed">Customize your view to identify provinces with active PNP streams matching your profile.</p>
+</div>
+<div class="flex-1 overflow-y-auto p-6 space-y-8 scroll-smooth">
+<div class="space-y-3">
+<label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]">search</span>
+                        Find Streams
+                    </label>
+<div class="group flex w-full items-center rounded-lg bg-[#05070a]/50 border border-glass-border focus-within:border-accent-gold/50 focus-within:shadow-[0_0_10px_rgba(212,175,55,0.1)] transition-all h-10 px-3">
+<input class="w-full bg-transparent border-none focus:ring-0 text-white placeholder-slate-600 text-sm h-full" placeholder="Search by name, NOC code..."/>
+<span class="text-xs text-slate-600 border border-slate-700 rounded px-1.5 py-0.5">⌘K</span>
+</div>
+</div>
+<div class="space-y-4">
+<label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]">tune</span>
+                        Eligibility Criteria
+                    </label>
+<div class="space-y-2">
+<label class="flex items-center gap-3 cursor-pointer group p-2 rounded hover:bg-white/5 transition-colors -mx-2">
+<div class="relative flex items-center">
+<input class="peer h-4 w-4 rounded border-slate-600 bg-[#05070a] text-primary focus:ring-0 focus:ring-offset-0 transition-all checked:bg-accent-gold checked:border-accent-gold checked:text-black" type="checkbox"/>
+</div>
+<span class="text-slate-400 text-sm group-hover:text-white transition-colors">Job Offer Required</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group p-2 rounded hover:bg-white/5 transition-colors -mx-2">
+<div class="relative flex items-center">
+<input class="peer h-4 w-4 rounded border-slate-600 bg-[#05070a] text-primary focus:ring-0 focus:ring-offset-0 transition-all checked:bg-accent-gold checked:border-accent-gold checked:text-black" type="checkbox"/>
+</div>
+<span class="text-slate-400 text-sm group-hover:text-white transition-colors">Express Entry Aligned</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group p-2 rounded hover:bg-white/5 transition-colors -mx-2">
+<div class="relative flex items-center">
+<input class="peer h-4 w-4 rounded border-slate-600 bg-[#05070a] text-primary focus:ring-0 focus:ring-offset-0 transition-all checked:bg-accent-gold checked:border-accent-gold checked:text-black" type="checkbox"/>
+</div>
+<span class="text-slate-400 text-sm group-hover:text-white transition-colors">Francophone Mobility</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group p-2 rounded bg-accent-gold/5 border border-accent-gold/10 -mx-2">
+<div class="relative flex items-center">
+<input checked="" class="peer h-4 w-4 rounded border-accent-gold/30 bg-[#05070a] text-primary focus:ring-0 focus:ring-offset-0 transition-all checked:bg-accent-gold checked:border-accent-gold checked:text-black" type="checkbox"/>
+</div>
+<span class="text-accent-gold-light font-semibold text-sm flex items-center gap-2 w-full justify-between">
+                                AI Recommended
+                                <span class="material-symbols-outlined text-[14px]">auto_awesome</span>
+</span>
+</label>
+</div>
+</div>
+<div class="space-y-3">
+<label class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Target Sectors</label>
+<div class="flex flex-wrap gap-2">
+<button class="px-3 py-1 rounded-full text-[11px] font-semibold bg-primary text-white border border-primary/50 shadow-[0_0_10px_rgba(31,59,97,0.4)] hover:scale-105 transition-transform">Tech</button>
+<button class="px-3 py-1 rounded-full text-[11px] font-semibold bg-[#05070a] text-slate-400 border border-glass-border hover:bg-white/5 hover:text-white transition-all">Healthcare</button>
+<button class="px-3 py-1 rounded-full text-[11px] font-semibold bg-[#05070a] text-slate-400 border border-glass-border hover:bg-white/5 hover:text-white transition-all">Trades</button>
+<button class="px-3 py-1 rounded-full text-[11px] font-semibold bg-[#05070a] text-slate-400 border border-glass-border hover:bg-white/5 hover:text-white transition-all">Transport</button>
+<button class="px-3 py-1 rounded-full text-[11px] font-semibold bg-[#05070a] text-slate-400 border border-glass-border hover:bg-white/5 hover:text-white transition-all">Agriculture</button>
+</div>
+</div>
+</div>
+<div class="p-5 border-t border-glass-border bg-gradient-to-r from-primary/20 via-[#0a0e14] to-[#0a0e14]">
+<div class="flex items-start gap-3">
+<div class="p-2 rounded-lg bg-gradient-to-br from-accent-gold/20 to-transparent border border-accent-gold/20 text-accent-gold shadow-glow-gold">
+<span class="material-symbols-outlined text-[18px]">psychology</span>
+</div>
+<div>
+<p class="text-[10px] font-bold text-accent-gold uppercase tracking-wider mb-1 flex items-center gap-1">
+                            Strategy Alert
+                        </p>
+<p class="text-xs text-slate-300 leading-relaxed font-medium">Your profile matches <span class="text-white font-bold">OINP Tech Draw</span> criteria. Consider updating your LinkedIn profile.</p>
+</div>
+</div>
+</div>
+</aside>
+<section class="col-span-12 lg:col-span-6 xl:col-span-6 relative flex items-center justify-center bg-[#06080b] z-10 overflow-hidden bg-grid-pattern">
+<div class="absolute top-6 left-6 z-20 flex flex-col gap-2">
+<div class="glass-panel p-1 rounded-lg flex flex-col gap-1 shadow-2xl">
+<button class="size-8 rounded flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all" title="Zoom In">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+<button class="size-8 rounded flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all" title="Zoom Out">
+<span class="material-symbols-outlined text-[20px]">remove</span>
+</button>
+</div>
+<button class="size-10 rounded-lg glass-panel flex items-center justify-center text-slate-400 hover:text-accent-gold hover:bg-white/5 transition-all mt-2 shadow-2xl" title="Recenter">
+<span class="material-symbols-outlined text-[20px]">center_focus_strong</span>
+</button>
+</div>
+<div class="absolute bottom-8 left-1/2 -translate-x-1/2 lg:translate-x-0 lg:left-8 z-20 glass-panel px-5 py-3 rounded-full flex items-center gap-6 shadow-xl shadow-black/50 border border-white/5">
+<div class="flex items-center gap-2">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-gold opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-accent-gold"></span>
+</span>
+<span class="text-[11px] font-bold text-white uppercase tracking-wide">Best Match</span>
+</div>
+<div class="w-px h-4 bg-white/10"></div>
+<div class="flex items-center gap-2">
+<span class="size-2.5 rounded-full bg-primary shadow-[0_0_8px_rgba(31,59,97,0.8)]"></span>
+<span class="text-[11px] font-medium text-slate-400">Active</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="size-2.5 rounded-full bg-slate-700"></span>
+<span class="text-[11px] font-medium text-slate-500">Paused</span>
+</div>
+</div>
+<div class="relative w-full h-full flex items-center justify-center p-4 lg:p-12 z-10 map-container">
+<svg class="w-full h-full max-h-[80vh] drop-shadow-2xl overflow-visible" preserveAspectRatio="xMidYMid meet" viewBox="0 0 1000 700">
+<defs>
+<radialGradient cx="50%" cy="50%" fx="50%" fy="50%" id="provinceGradient" r="50%">
+<stop offset="0%" style="stop-color:rgb(31, 59, 97);stop-opacity:0.2"></stop>
+<stop offset="100%" style="stop-color:rgb(31, 59, 97);stop-opacity:0"></stop>
+</radialGradient>
+<filter height="140%" id="glow" width="140%" x="-20%" y="-20%">
+<feGaussianBlur result="blur" stdDeviation="4"></feGaussianBlur>
+<feComposite in="SourceGraphic" in2="blur" operator="over"></feComposite>
+</filter>
+</defs>
+<path d="M100,100 L900,100" stroke="rgba(255,255,255,0.03)" stroke-dasharray="4 4" stroke-width="1"></path>
+<path d="M100,600 L900,600" stroke="rgba(255,255,255,0.03)" stroke-dasharray="4 4" stroke-width="1"></path>
+<g class="province-group group opacity-40">
+<path class="province-path fill-white/5 stroke-white/5 stroke-1" d="M 120,300 L 150,80 L 400,50 L 350,300 Z"></path>
+</g>
+<g class="province-group group opacity-40">
+<path class="province-path fill-white/5 stroke-white/5 stroke-1" d="M 350,300 L 400,50 L 600,60 L 520,300 Z"></path>
+</g>
+<g class="province-group group opacity-40">
+<path class="province-path fill-white/5 stroke-white/5 stroke-1" d="M 520,300 L 600,60 L 800,50 L 700,300 Z"></path>
+</g>
+<g class="province-group group">
+<path class="province-path fill-[#131b26] stroke-white/10 stroke-1 hover:fill-primary/40 cursor-pointer" d="M 80,300 L 180,300 L 170,500 L 100,520 L 40,420 Z"></path>
+<text class="province-label text-[12px] fill-slate-500 font-bold" x="100" y="420">BC</text>
+<circle class="fill-primary animate-pulse" cx="120" cy="380" r="2"></circle>
+</g>
+<g class="province-group group">
+<path class="province-path fill-[#131b26] stroke-white/10 stroke-1 hover:fill-primary/40 cursor-pointer" d="M 180,300 L 270,300 L 270,500 L 170,500 Z"></path>
+<text class="province-label text-[12px] fill-slate-500 font-bold" x="210" y="420">AB</text>
+<circle class="fill-slate-600" cx="225" cy="400" r="2"></circle>
+</g>
+<g class="province-group group">
+<path class="province-path fill-[#131b26] stroke-white/10 stroke-1 hover:fill-primary/40 cursor-pointer" d="M 270,300 L 360,300 L 350,500 L 270,500 Z"></path>
+<text class="province-label text-[12px] fill-slate-500 font-bold" x="300" y="420">SK</text>
+</g>
+<g class="province-group group">
+<path class="province-path fill-[#131b26] stroke-white/10 stroke-1 hover:fill-primary/40 cursor-pointer" d="M 360,300 L 450,300 L 480,370 L 460,500 L 350,500 Z"></path>
+<text class="province-label text-[12px] fill-slate-500 font-bold" x="390" y="420">MB</text>
+</g>
+<g class="province-group group">
+<path class="fill-accent-gold/5 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" d="M 450,300 L 520,270 L 600,300 L 620,400 L 580,600 L 460,500 L 480,370 Z"></path>
+<path class="province-path active cursor-pointer" d="M 450,300 L 520,270 L 600,300 L 620,400 L 580,600 L 460,500 L 480,370 Z"></path>
+<text class="province-label text-[16px] fill-white font-extrabold tracking-widest text-glow" x="510" y="440">ON</text>
+<g transform="translate(550, 480)">
+<circle class="pulse-ring stroke-accent-gold/40 fill-none" cx="0" cy="0" r="10" stroke-width="1"></circle>
+<circle class="fill-accent-gold drop-shadow-[0_0_10px_rgba(255,215,0,0.8)]" cx="0" cy="0" r="3"></circle>
+</g>
+</g>
+<g class="province-group group">
+<path class="province-path fill-[#131b26] stroke-white/10 stroke-1 hover:fill-primary/40 cursor-pointer" d="M 600,300 L 700,270 L 820,240 L 850,420 L 700,470 L 620,400 Z"></path>
+<text class="province-label text-[12px] fill-slate-500 font-bold" x="680" y="370">QC</text>
+</g>
+<g class="province-group group">
+<path class="province-path fill-[#131b26] stroke-white/10 stroke-1 hover:fill-primary/40 cursor-pointer" d="M 700,470 L 850,420 L 920,440 L 880,520 L 750,520 Z"></path>
+</g>
+<line class="opacity-0 lg:opacity-100" stroke="url(#lineGradient)" stroke-width="1" x1="550" x2="680" y1="480" y2="480"></line>
+<circle class="opacity-0 lg:opacity-100" cx="680" cy="480" fill="#D4AF37" r="2"></circle>
+<defs>
+<linearGradient id="lineGradient" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" style="stop-color:#D4AF37;stop-opacity:0.8"></stop>
+<stop offset="100%" style="stop-color:#D4AF37;stop-opacity:0.1"></stop>
+</linearGradient>
+</defs>
+</svg>
+<div class="absolute top-[60%] left-[62%] pointer-events-none hidden lg:block z-30 transform -translate-y-1/2">
+<div class="glass-panel p-4 rounded-xl flex flex-col gap-2 border border-accent-gold/30 shadow-[0_0_40px_rgba(0,0,0,0.4)] backdrop-blur-xl animate-[fadeIn_0.5s_ease-out]">
+<div class="flex items-center justify-between gap-8 mb-1">
+<div class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-accent-gold animate-pulse"></span>
+<span class="text-sm font-bold text-white font-heading">Ontario</span>
+</div>
+<span class="text-[10px] bg-accent-gold/20 text-accent-gold-light border border-accent-gold/30 font-bold px-1.5 py-0.5 rounded uppercase tracking-wide">Top Choice</span>
+</div>
+<div class="space-y-1.5">
+<div class="flex justify-between items-center text-[11px] text-slate-300">
+<span>Recent CRS Cutoff</span>
+<span class="font-bold text-white font-mono">458</span>
+</div>
+<div class="flex justify-between items-center text-[11px] text-slate-300">
+<span>Active Streams</span>
+<span class="font-bold text-accent-gold font-mono">4</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<aside class="col-span-12 lg:col-span-3 xl:col-span-3 glass-panel border-l border-glass-border flex flex-col z-20 h-full relative backdrop-blur-2xl shadow-[-10px_0_40px_rgba(0,0,0,0.3)]">
+<div class="relative h-44 w-full shrink-0 group overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-[#0a0e14] via-[#0a0e14]/40 to-transparent z-10"></div>
+<div class="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="bg-black/50 hover:bg-black/70 text-white rounded-full p-1.5 backdrop-blur-sm transition-colors">
+<span class="material-symbols-outlined text-[16px]">favorite</span>
+</button>
+</div>
+<div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" data-alt="Toronto skyline at night" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB9C01cOtfLVpe3zZd_u5xhlL-RcorVdVZoUAy4QhPRBc3YwpfxXk_21UclEqiVJMUB3AidkJ5BD9J6jPLcd9lg3E2dBa_L0tDYrSfj3obvPIKuiynCQALLc7SyQ5DlztjLC-rP0Q7m-B3LPoL4PoAVC2PRgI0E_cx_lyAUMlzT4CEk-eAbbMu5t4zGLU8J-R1AEpX5NARjBEn5jrGzdnYZMvg8Fg9x2x41CuGAnrEgn2R8kpHP7yFso4qmVgaEwY2m3cSq15HK3vM");'></div>
+<div class="absolute bottom-0 left-0 right-0 p-6 z-20">
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2 py-0.5 rounded bg-accent-gold text-[#0a0e14] text-[10px] font-extrabold uppercase tracking-wide shadow-glow-gold">92% Match</span>
+<span class="px-2 py-0.5 rounded bg-white/10 text-white border border-white/10 text-[10px] font-bold uppercase tracking-wide">OINP</span>
+</div>
+<h2 class="text-3xl font-heading font-bold text-white tracking-tight drop-shadow-md">Ontario</h2>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-px bg-glass-border">
+<div class="bg-gradient-to-br from-primary/10 to-[#0a0e14] p-4 text-center hover:bg-white/5 transition-colors cursor-help">
+<p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold mb-1">CRS Range</p>
+<p class="text-xl font-bold text-white font-heading">458-462</p>
+</div>
+<div class="bg-gradient-to-bl from-primary/10 to-[#0a0e14] p-4 text-center hover:bg-white/5 transition-colors cursor-help">
+<p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold mb-1">Draw Date</p>
+<p class="text-xl font-bold text-white font-heading">Oct 24</p>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-5 space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Priority Streams</h3>
+<button class="text-[10px] text-accent-gold hover:text-white transition-colors font-medium">View All (9)</button>
+</div>
+<div class="group relative p-4 rounded-xl bg-gradient-to-r from-primary/20 to-transparent border border-accent-gold/30 hover:border-accent-gold hover:shadow-[0_0_15px_rgba(212,175,55,0.15)] transition-all cursor-pointer">
+<div class="absolute -right-1.5 -top-1.5 z-10">
+<span class="flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-gold opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-accent-gold border border-[#0a0e14]"></span>
+</span>
+</div>
+<div class="flex justify-between items-start mb-2">
+<h4 class="text-sm font-bold text-white group-hover:text-accent-gold-light transition-colors leading-tight pr-4">Human Capital Priorities</h4>
+<span class="text-[9px] font-bold text-[#4ade80] bg-[#4ade80]/10 px-1.5 py-0.5 rounded border border-[#4ade80]/20 tracking-wide">OPEN</span>
+</div>
+<p class="text-xs text-slate-400 mb-3 line-clamp-2 leading-relaxed">Tech draws targeting NOC 21231. No job offer needed.</p>
+<div class="space-y-1">
+<div class="flex justify-between text-[10px] font-medium">
+<span class="text-slate-400">Match Score</span>
+<span class="text-accent-gold">High</span>
+</div>
+<div class="h-1.5 flex-1 bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-accent-gold to-accent-gold-light w-[92%] rounded-full shadow-[0_0_10px_rgba(255,215,0,0.5)]"></div>
+</div>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-white/[0.02] border border-glass-border hover:bg-white/5 hover:border-white/10 transition-all cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<h4 class="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">French-Speaking Skilled Worker</h4>
+<span class="text-[9px] font-bold text-[#4ade80] bg-[#4ade80]/10 px-1.5 py-0.5 rounded border border-[#4ade80]/20 tracking-wide">OPEN</span>
+</div>
+<p class="text-xs text-slate-500 mb-3">Requires CLB 7 French.</p>
+<div class="flex items-center gap-3">
+<div class="h-1.5 flex-1 bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[65%] rounded-full"></div>
+</div>
+<span class="text-[10px] font-bold text-slate-400">65%</span>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-white/[0.01] border border-glass-border opacity-60 hover:opacity-100 transition-all cursor-not-allowed grayscale hover:grayscale-0">
+<div class="flex justify-between items-start mb-2">
+<h4 class="text-sm font-semibold text-slate-300">Masters Graduate Stream</h4>
+<span class="text-[9px] font-bold text-accent-red bg-accent-red/10 px-1.5 py-0.5 rounded border border-accent-red/20 tracking-wide">PAUSED</span>
+</div>
+<div class="flex items-center gap-3 mt-2">
+<div class="h-1.5 flex-1 bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-slate-600 w-[20%] rounded-full"></div>
+</div>
+<span class="text-[10px] font-bold text-slate-500">20%</span>
+</div>
+</div>
+</div>
+<div class="p-5 border-t border-glass-border bg-[#0a0e14]">
+<button class="w-full py-3.5 px-4 bg-primary hover:bg-[#2a4d7d] text-white font-bold text-sm rounded-lg shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all flex items-center justify-center gap-2 group border border-white/5">
+                    Analyze Full Eligibility
+                    <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</aside>
+</main>
+
+</body></html>
