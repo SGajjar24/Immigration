@@ -73,32 +73,41 @@ const FeaturesSection = () => {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {features.map((feature, idx) => (
                         <motion.div
                             key={idx}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true }}
-                            transition={{ delay: idx * 0.1 }}
-                            whileHover={{ y: -5 }}
-                            className="glass-panel p-8 rounded-2xl group hover:bg-white/5 transition-all duration-300 relative overflow-hidden"
+                            transition={{ delay: idx * 0.1, duration: 0.5 }}
+                            className="glass-prism p-8 rounded-2xl group relative overflow-hidden flex flex-col items-start"
                         >
+                            {/* Animated Background Gradient */}
                             <div className={cn(
-                                "w-12 h-12 rounded-xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110 duration-300",
-                                feature.bg, feature.color
+                                "absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-5 transition-opacity duration-500",
+                                feature.color === 'text-accent-gold' ? 'from-accent-gold to-yellow-500' :
+                                    feature.color === 'text-red-400' ? 'from-maple-red to-red-800' :
+                                        'from-primary to-blue-900'
+                            )}></div>
+
+                            <div className={cn(
+                                "w-14 h-14 rounded-xl flex items-center justify-center mb-6 transition-all group-hover:scale-110 group-hover:rotate-3 duration-500 shadow-lg shadow-black/20 z-10",
+                                feature.bg, feature.color, "border border-white/10"
                             )}>
-                                <feature.icon className="w-6 h-6" />
+                                <feature.icon className="w-7 h-7" />
                             </div>
-                            <h3 className="text-xl font-bold text-white mb-3 group-hover:text-accent-gold transition-colors">{feature.title}</h3>
-                            <p className="text-gray-400 text-sm leading-relaxed mb-6">
+                            <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-accent-gold transition-colors z-10">{feature.title}</h3>
+                            <p className="text-gray-400 text-base leading-relaxed mb-6 z-10">
                                 {feature.description}
                             </p>
 
                             <div className={cn(
-                                "absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-current to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500",
+                                "mt-auto flex items-center gap-2 text-xs font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-500 z-10",
                                 feature.color
-                            )}></div>
+                            )}>
+                                Learn More <Globe className="w-3 h-3" />
+                            </div>
                         </motion.div>
                     ))}
                 </div>

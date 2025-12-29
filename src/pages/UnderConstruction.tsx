@@ -42,15 +42,13 @@ const UnderConstruction = ({ pageName = 'This feature', onBack }: UnderConstruct
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        {onBack && (
-                            <button
-                                onClick={onBack}
-                                className="flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium transition-all"
-                            >
-                                <ArrowLeft className="w-4 h-4" />
-                                Go Back
-                            </button>
-                        )}
+                        <button
+                            onClick={onBack || (() => window.location.href = '/')}
+                            className="flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium transition-all"
+                        >
+                            <ArrowLeft className="w-4 h-4" />
+                            {onBack ? 'Go Back' : 'Home'}
+                        </button>
                         <button className="flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-primary hover:bg-primary-light text-white font-bold transition-all shadow-lg shadow-primary/20">
                             <Bell className="w-4 h-4" />
                             Notify Me

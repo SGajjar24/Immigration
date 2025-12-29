@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, User, GraduationCap, Languages, Briefcase, CheckCircle, Lightbulb, Sparkles, AlertCircle } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { useImmigrationStore } from '../../store/useImmigrationStore';
 
 const steps = [
     {
@@ -37,6 +38,7 @@ const steps = [
 ];
 
 const AssessmentWizard = () => {
+    const { addAssessmentResult } = useImmigrationStore();
     const [currentStep, setCurrentStep] = useState(0);
     const [formData, setFormData] = useState({
         age: '',
@@ -49,11 +51,42 @@ const AssessmentWizard = () => {
         relative: false
     });
 
-    const updateField = (field: string, value: any) => {
+    const updateField = (field: string, value: string | boolean) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
-    const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
+    const nextStep = () => {
+        setCurrentStep((prev) => {
+            const next = Math.min(prev + 1, steps.length - 1);
+            // If moving to results step (index 4), save the result
+            if (next === 4 && prev === 3) {
+                // Dynamic score calculation
+                let scoreEst = 0;
+                const age = parseInt(formData.age) || 30;
+                scoreEst += age >= 20 && age <= 29 ? 110 : Math.max(0, 110 - (age - 29) * 5);
+                if (formData.education === 'PhD') scoreEst += 150;
+                else if (formData.education === 'Masters') scoreEst += 135;
+                else if (formData.education === 'Bachelors') scoreEst += 120;
+                else if (formData.education === 'Diploma (2yr+)') scoreEst += 98;
+                else scoreEst += 30;
+                if (formData.experience === '3+') scoreEst += 80;
+                else if (formData.experience === '2') scoreEst += 50;
+                else if (formData.experience === '1') scoreEst += 25;
+                if (formData.jobOffer) scoreEst += 50;
+                if (formData.relative) scoreEst += 15;
+                // French bonus
+                if (formData.french === 'B2+') scoreEst += 50;
+
+                addAssessmentResult({
+                    eligible: scoreEst >= 400,
+                    recommendedPath: scoreEst >= 450 ? 'Express Entry' : 'Provincial Nominee',
+                    scoreEstimate: scoreEst,
+                    tags: formData.french !== 'None' ? ['French Speaker'] : []
+                });
+            }
+            return next;
+        });
+    };
     const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
 
     const renderStepContent = () => {

@@ -1,0 +1,73 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user owns the document
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Helper function to check if user has admin role (via custom claims)
+    function isAdmin() {
+      return isAuthenticated() && request.auth.token.admin == true;
+    }
+    
+    // Users collection - users can only access their own data
+    match /users/{userId} {
+      // Users can read their own profile
+      allow read: if isOwner(userId);
+      
+      // Users can create their own profile (on first sign-in)
+      allow create: if isOwner(userId) && 
+        request.resource.data.keys().hasAll(['userProfile']) &&
+        request.resource.data.userProfile.role in ['user', 'admin'];
+      
+      // Users can update their own profile (except role field for non-admins)
+      allow update: if isOwner(userId) && (
+        // Regular users cannot change their role
+        (request.resource.data.userProfile.role == resource.data.userProfile.role) ||
+        // Admins can change roles
+        isAdmin()
+      );
+      
+      // Only admins can delete user documents
+      allow delete: if isAdmin();
+    }
+    
+    // Consultations collection - for booking data
+    match /consultations/{consultationId} {
+      // Users can read their own consultations
+      allow read: if isAuthenticated() && 
+        resource.data.userId == request.auth.uid;
+      
+      // Users can create consultations for themselves
+      allow create: if isAuthenticated() && 
+        request.resource.data.userId == request.auth.uid;
+      
+      // Users can update their own pending consultations
+      allow update: if isAuthenticated() && 
+        resource.data.userId == request.auth.uid &&
+        resource.data.status == 'pending';
+      
+      // Admins can read/update all consultations
+      allow read, update: if isAdmin();
+    }
+    
+    // Admin-only: Site analytics and metrics
+    match /analytics/{document=**} {
+      allow read, write: if isAdmin();
+    }
+    
+    // Public read-only data (immigration info, province data, etc.)
+    match /public/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

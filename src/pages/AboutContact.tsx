@@ -5,11 +5,8 @@ import {
     Linkedin, Twitter, Youtube, ArrowRight, Shield,
     Users, Award, Heart, Globe, Building2, Sparkles
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '../utils/cn';
-
-interface AboutContactProps {
-    onNavigate?: (page: string) => void;
-}
 
 const teamMembers = [
     {
@@ -45,7 +42,7 @@ const stats = [
     { value: "50+", label: "Countries Served", icon: Globe }
 ];
 
-const AboutContact = ({ onNavigate }: AboutContactProps) => {
+const AboutContact = () => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -55,6 +52,7 @@ const AboutContact = ({ onNavigate }: AboutContactProps) => {
     });
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -428,7 +426,7 @@ const AboutContact = ({ onNavigate }: AboutContactProps) => {
                     <h2 className="text-3xl font-bold text-white mb-4">Ready to Start Your Journey?</h2>
                     <p className="text-gray-400 mb-8">Take our free eligibility assessment and discover your best pathway to Canada.</p>
                     <button
-                        onClick={() => onNavigate?.('assessment')}
+                        onClick={() => navigate('/assessment')}
                         className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-maple-red to-maple-dark hover:from-red-600 hover:to-red-800 text-white font-bold shadow-lg shadow-maple-red/30 transition-all group"
                     >
                         Start Free Assessment

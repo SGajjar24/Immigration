@@ -1,15 +1,8 @@
 import { Calculator, Clock, FileCheck, Search } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-interface QuickToolsProps {
-    onNavigate?: (page: string) => void;
-}
-
-const QuickTools = ({ onNavigate }: QuickToolsProps) => {
-    const handleNavigate = (page: string) => {
-        if (onNavigate) {
-            onNavigate(page);
-        }
-    };
+const QuickTools = () => {
+    const navigate = useNavigate();
 
     return (
         <section className="py-12 px-6">
@@ -17,7 +10,7 @@ const QuickTools = ({ onNavigate }: QuickToolsProps) => {
                 <div className="glass-panel p-2 flex flex-col md:flex-row items-stretch md:items-center gap-2">
                     <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-2">
                         <button
-                            onClick={() => handleNavigate('calculator')}
+                            onClick={() => navigate('/calculator')}
                             className="flex items-center gap-3 p-4 hover:bg-white/5 rounded-xl transition-colors text-left"
                         >
                             <div className="p-2 bg-maple-red/10 rounded-lg text-maple-red">
@@ -30,7 +23,7 @@ const QuickTools = ({ onNavigate }: QuickToolsProps) => {
                         </button>
 
                         <button
-                            onClick={() => handleNavigate('resources')}
+                            onClick={() => navigate('/resources')}
                             className="flex items-center gap-3 p-4 hover:bg-white/5 rounded-xl transition-colors text-left"
                         >
                             <div className="p-2 bg-blue-500/10 rounded-lg text-blue-500">
@@ -43,7 +36,7 @@ const QuickTools = ({ onNavigate }: QuickToolsProps) => {
                         </button>
 
                         <button
-                            onClick={() => handleNavigate('resources')}
+                            onClick={() => navigate('/checklist')}
                             className="flex items-center gap-3 p-4 hover:bg-white/5 rounded-xl transition-colors text-left"
                         >
                             <div className="p-2 bg-green-500/10 rounded-lg text-green-500">
@@ -56,7 +49,7 @@ const QuickTools = ({ onNavigate }: QuickToolsProps) => {
                         </button>
 
                         <button
-                            onClick={() => handleNavigate('resources')}
+                            onClick={() => navigate('/resources')}
                             className="flex items-center gap-3 p-4 hover:bg-white/5 rounded-xl transition-colors text-left"
                         >
                             <div className="p-2 bg-purple-500/10 rounded-lg text-purple-500">
@@ -73,7 +66,7 @@ const QuickTools = ({ onNavigate }: QuickToolsProps) => {
 
                     <div className="p-2">
                         <button
-                            onClick={() => handleNavigate('assessment')}
+                            onClick={() => navigate('/assessment')}
                             className="btn-primary w-full md:w-auto py-3 px-8 whitespace-nowrap rounded-lg"
                         >
                             Run AI Analysis

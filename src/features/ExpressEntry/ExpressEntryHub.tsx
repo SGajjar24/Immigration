@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
     LayoutDashboard,
     Calculator,
@@ -5,22 +6,66 @@ import {
     MessageSquare,
     BarChart3,
     Settings,
-    CheckCircle,
     Verified,
-    AlertTriangle,
     ArrowRight,
     ArrowUpRight,
     Briefcase,
     Globe,
     GraduationCap,
     ChevronRight,
-    Diamond
+    Diamond,
+    Target,
+    Award as Reward,
+    MapPin
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { useImmigrationStore } from '../../store/useImmigrationStore';
+import DrawTrendsChart from '../../components/DrawTrendsChart';
+import NOCSearch from '../../components/NOCSearch';
 
-const ExpressEntryHub = () => {
+interface ExpressEntryHubProps {
+    onNavigate?: (page: string) => void;
+}
+
+const ExpressEntryHub = ({ onNavigate }: ExpressEntryHubProps) => {
+    const { userProfile, crsData } = useImmigrationStore();
     const tabs = ['Federal Skilled Worker', 'Canadian Experience Class', 'Federal Skilled Trades', 'PNP'];
-    const activeTab = 'Federal Skilled Worker';
+    const [activeTab, setActiveTab] = useState('Federal Skilled Worker');
+
+    const programContent = {
+        'Federal Skilled Worker': {
+            description: "For skilled workers with foreign work experience who want to immigrate to Canada permanently.",
+            requirements: [
+                { icon: Briefcase, title: 'Work Experience', text: '1 year of continuous full-time paid work experience within the last 10 years.' },
+                { icon: Globe, title: 'Language Skills', text: 'Minimum CLB 7 in all four abilities (reading, writing, listening, speaking).' },
+                { icon: GraduationCap, title: 'Education', text: 'Secondary education required. ECA needed for foreign degrees.' }
+            ]
+        },
+        'Canadian Experience Class': {
+            description: "For skilled workers who have Canadian work experience and want to become permanent residents.",
+            requirements: [
+                { icon: Briefcase, title: 'Canadian Experience', text: '1 year of skilled work experience in Canada within the last 3 years.' },
+                { icon: Globe, title: 'Language Skills', text: 'CLB 7 for NOC 0/A jobs, CLB 5 for NOC B jobs.' },
+                { icon: GraduationCap, title: 'Education', text: 'No specific education requirement, but points awarded for degrees.' }
+            ]
+        },
+        'Federal Skilled Trades': {
+            description: "For skilled workers who are qualified in a skilled trade and want to become permanent residents.",
+            requirements: [
+                { icon: Briefcase, title: 'Work Experience', text: '2 years of full-time work experience in a skilled trade within the last 5 years.' },
+                { icon: Globe, title: 'Language Skills', text: 'CLB 5 for speaking/listening, CLB 4 for reading/writing.' },
+                { icon: Reward, title: 'Job Offer/Cert', text: 'Valid job offer for at least 1 year OR a certificate of qualification.' }
+            ]
+        },
+        'PNP': {
+            description: "For workers who have the skills, education and work experience to contribute to a specific province.",
+            requirements: [
+                { icon: MapPin, title: 'Provincial Interest', text: 'Must meet the specific requirements of the province or territory.' },
+                { icon: Target, title: 'Nomination', text: 'Receive a nomination certificate from a province to gain 600 CRS points.' },
+                { icon: GraduationCap, title: 'Tied to Region', text: 'Intention to reside in the nominating province is mandatory.' }
+            ]
+        }
+    };
 
     return (
         <div className="min-h-screen bg-background-dark text-white font-body selection:bg-primary selection:text-white flex flex-col">
@@ -34,11 +79,13 @@ const ExpressEntryHub = () => {
                 <aside className="w-full lg:w-64 hidden md:flex flex-col gap-6 sticky top-24 h-fit">
                     {/* Mini Profile */}
                     <div className="glass-panel p-4 rounded-xl flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-inner">JD</div>
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-inner">
+                            {userProfile.name.slice(0, 2).toUpperCase()}
+                        </div>
                         <div>
-                            <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold">CRS Score</p>
+                            <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold">Saved Score</p>
                             <p className="text-lg font-bold text-white flex items-center gap-1">
-                                482 <span className="text-xs font-normal text-green-400">▲ 2</span>
+                                {crsData.lastCalculatedScore || '---'} {crsData.lastCalculatedScore && <span className="text-xs font-normal text-green-400">▲ Active</span>}
                             </p>
                         </div>
                     </div>
@@ -54,8 +101,9 @@ const ExpressEntryHub = () => {
                         ].map((item) => (
                             <button
                                 key={item.label}
+                                onClick={() => onNavigate?.(item.label.toLowerCase().replace(' ', '-'))}
                                 className={cn(
-                                    "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all",
+                                    "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all w-full",
                                     item.active
                                         ? "bg-primary/20 border border-primary/30 text-white shadow-[0_0_15px_rgba(31,59,97,0.3)]"
                                         : "text-gray-400 hover:text-white hover:bg-white/5"
@@ -75,16 +123,17 @@ const ExpressEntryHub = () => {
                     </div>
 
                     {/* Pro Plan Promo */}
-                    <div className="mt-4 glass-panel p-4 rounded-xl relative overflow-hidden group cursor-pointer border border-accent-gold/20">
-                        <div className="absolute inset-0 bg-gradient-to-tr from-accent-gold/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="mt-4 glass-prism p-4 rounded-xl relative overflow-hidden group cursor-pointer border-accent-gold/20 shadow-lg shadow-accent-gold/5">
+                        <div className="absolute inset-0 sparkle-bg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="absolute inset-0 bg-gradient-to-tr from-accent-gold/20 to-transparent"></div>
                         <div className="relative z-10">
-                            <div className="flex items-center gap-2 mb-2 text-accent-gold">
+                            <div className="flex items-center gap-2 mb-2 text-accent-gold animate-glow-pulse">
                                 <Diamond className="w-4 h-4 fill-current" />
-                                <span className="text-xs font-bold uppercase">Pro Plan</span>
+                                <span className="text-xs font-black uppercase tracking-tighter">Pro Access</span>
                             </div>
-                            <p className="text-sm text-gray-300 mb-3">Get detailed draw predictions and document review.</p>
-                            <button className="w-full py-2 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold text-white border border-white/10 transition-colors">
-                                Upgrade Now
+                            <p className="text-xs text-gray-300 mb-3 leading-tight font-medium">Predict draws with 98% accuracy and get expert review.</p>
+                            <button className="w-full py-2.5 rounded-lg bg-gradient-to-r from-accent-gold to-yellow-500 hover:scale-105 active:scale-95 text-background-dark text-xs font-black transition-all shadow-lg shadow-accent-gold/20">
+                                UPGRADE NOW
                             </button>
                         </div>
                     </div>
@@ -104,9 +153,9 @@ const ExpressEntryHub = () => {
                                     </span>
                                     Profile Active in Pool
                                 </div>
-                                <h2 className="text-2xl font-bold text-white mb-2">Welcome Back, John</h2>
+                                <h2 className="text-2xl font-bold text-white mb-2">Welcome Back, {userProfile.name}</h2>
                                 <p className="text-gray-300 max-w-xl text-sm leading-relaxed">
-                                    Your profile is currently active. The next predicted draw for <strong className="text-white">Federal Skilled Worker</strong> is in <span className="text-accent-gold">3 days</span>. Ensure your employment records are up to date to maximize your CRS score.
+                                    Your profile is currently active. The next predicted draw for <strong className="text-white">{activeTab}</strong> is in <span className="text-accent-gold">3 days</span>. Ensure your employment records are up to date to maximize your CRS score.
                                 </p>
                             </div>
                             <div className="flex gap-3 shrink-0">
@@ -127,8 +176,9 @@ const ExpressEntryHub = () => {
                             {tabs.map(tab => (
                                 <button
                                     key={tab}
+                                    onClick={() => setActiveTab(tab)}
                                     className={cn(
-                                        "pb-3 border-b-2 text-sm whitespace-nowrap transition-colors",
+                                        "pb-3 border-b-2 text-sm whitespace-nowrap transition-colors outline-none",
                                         activeTab === tab
                                             ? "border-accent-gold text-white font-semibold"
                                             : "border-transparent text-gray-400 hover:text-white font-medium"
@@ -143,58 +193,7 @@ const ExpressEntryHub = () => {
                     {/* Chart & Eligibility Grid */}
                     <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                         {/* Chart Area */}
-                        <div className="xl:col-span-2 glass-panel p-6 rounded-2xl">
-                            <div className="flex items-center justify-between mb-6">
-                                <h3 className="text-lg font-bold text-white">Score Trend Analysis</h3>
-                                <div className="flex bg-white/5 rounded-lg p-0.5">
-                                    {['6M', '1Y', 'All'].map((p, i) => (
-                                        <button key={p} className={cn(
-                                            "px-3 py-1 rounded-md text-xs font-medium transition-colors",
-                                            i === 0 ? "bg-white/10 text-white shadow-sm" : "text-gray-400 hover:text-white"
-                                        )}>
-                                            {p}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* CSS Chart */}
-                            <div className="h-64 w-full flex items-end justify-between gap-2 px-2 pb-2 border-b border-l border-white/10 relative">
-                                {/* Grid Lines */}
-                                <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-10">
-                                    {[...Array(5)].map((_, i) => <div key={i} className="border-t border-white w-full h-0"></div>)}
-                                </div>
-
-                                {/* Bars */}
-                                {[
-                                    { val: 481, h: '40%' }, { val: 489, h: '55%' }, { val: 483, h: '45%' },
-                                    { val: 496, h: '65%' }, { val: 491, h: '60%' },
-                                    { val: 524, h: '85%', active: true }
-                                ].map((bar, i) => (
-                                    <div key={i} className="w-full max-w-[40px] flex flex-col justify-end h-full gap-2 z-10 group cursor-pointer">
-                                        <div
-                                            className={cn(
-                                                "w-full rounded-t-sm transition-all relative",
-                                                bar.active
-                                                    ? "bg-gradient-to-t from-primary/50 to-accent-gold shadow-[0_0_15px_rgba(225,173,1,0.3)]"
-                                                    : "bg-white/10 hover:bg-primary/40"
-                                            )}
-                                            style={{ height: bar.h }}
-                                        >
-                                            <div className={cn(
-                                                "absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity",
-                                                bar.active ? "text-accent-gold font-bold opacity-100" : "text-white"
-                                            )}>
-                                                {bar.val}
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="flex justify-between mt-2 text-xs text-gray-500 px-2">
-                                <span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span className="text-accent-gold font-bold">Oct</span>
-                            </div>
-                        </div>
+                        <DrawTrendsChart className="xl:col-span-2" />
 
                         {/* Eligibility Mini Card */}
                         <div className="xl:col-span-1 glass-panel p-6 rounded-2xl flex flex-col justify-between bg-gradient-to-br from-primary/20 to-transparent">
@@ -206,19 +205,22 @@ const ExpressEntryHub = () => {
                                     <h3 className="text-lg font-bold text-white">Eligibility Check</h3>
                                 </div>
                                 <p className="text-sm text-gray-300 mb-6 leading-relaxed">
-                                    Based on recent trends, your current score of <strong>482</strong> is competitive for category-based draws but may require improvement for general draws.
+                                    {programContent[activeTab as keyof typeof programContent].description}
                                 </p>
                             </div>
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between text-sm py-2 border-b border-white/5">
-                                    <span className="text-gray-400">Education</span>
-                                    <span className="text-green-400 flex items-center gap-1"><CheckCircle className="w-4 h-4" /> Maxed</span>
+                                    <span className="text-gray-400">Current Score</span>
+                                    <span className="text-white font-bold">{crsData.lastCalculatedScore || 0}</span>
                                 </div>
                                 <div className="flex items-center justify-between text-sm py-2 border-b border-white/5">
-                                    <span className="text-gray-400">Language</span>
-                                    <span className="text-accent-gold flex items-center gap-1"><AlertTriangle className="w-4 h-4" /> Improve</span>
+                                    <span className="text-gray-400">Target for {activeTab}</span>
+                                    <span className="text-accent-gold font-bold">500+</span>
                                 </div>
-                                <button className="w-full mt-4 py-2.5 rounded-lg bg-white text-primary-light font-bold text-sm hover:bg-gray-100 transition-colors">
+                                <button
+                                    onClick={() => onNavigate?.('calculator')}
+                                    className="w-full mt-4 py-2.5 rounded-lg bg-white text-primary-light font-bold text-sm hover:bg-gray-100 transition-colors"
+                                >
                                     Simulate Improvements
                                 </button>
                             </div>
@@ -229,23 +231,31 @@ const ExpressEntryHub = () => {
                     <div>
                         <h3 className="text-xl font-bold text-white mb-4">Program Requirements</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {[
-                                { icon: Briefcase, title: 'Work Experience', text: 'Must have 1 year of continuous full-time (or equivalent) paid work experience in the last 10 years.', color: 'border-l-primary' },
-                                { icon: Globe, title: 'Language Skills', text: 'Minimum CLB 7 in all four abilities for FSW. Higher scores significantly boost CRS ranking.', color: 'border-l-accent-gold' },
-                                { icon: GraduationCap, title: 'Education', text: 'Secondary education required. ECA report needed for foreign degrees.', color: 'border-l-gray-500' },
-                            ].map((card, i) => (
-                                <div key={i} className={cn("glass-panel p-5 rounded-xl border-l-4 hover:bg-white/5 transition-colors group cursor-pointer", card.color)}>
-                                    <div className="flex justify-between items-start mb-3">
-                                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-white">
-                                            <card.icon className="w-5 h-5" />
+                            {programContent[activeTab as keyof typeof programContent].requirements.map((card, i) => {
+                                const IconComp = card.icon;
+                                return (
+                                    <div key={i} className={cn("glass-panel p-5 rounded-xl border-l-4 hover:bg-white/5 transition-colors group cursor-pointer border-l-primary")}>
+                                        <div className="flex justify-between items-start mb-3">
+                                            <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-white">
+                                                <IconComp className="w-5 h-5" />
+                                            </div>
+                                            <ArrowUpRight className="w-5 h-5 text-gray-600 group-hover:text-white transition-colors" />
                                         </div>
-                                        <ArrowUpRight className="w-5 h-5 text-gray-600 group-hover:text-white transition-colors" />
+                                        <h4 className="font-bold text-white mb-1">{card.title}</h4>
+                                        <p className="text-xs text-gray-400 leading-relaxed">{card.text}</p>
                                     </div>
-                                    <h4 className="font-bold text-white mb-1">{card.title}</h4>
-                                    <p className="text-xs text-gray-400 leading-relaxed">{card.text}</p>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
+                    </div>
+
+                    {/* NOC Search Utility */}
+                    <div className="glass-panel p-6 rounded-2xl border-t border-white/10">
+                        <div className="mb-6">
+                            <h3 className="text-xl font-bold text-white mb-2">Find Your NOC Code</h3>
+                            <p className="text-gray-400 text-sm">Not sure about your occupation code? Search our database to find your 2021 NOC and TEER category.</p>
+                        </div>
+                        <NOCSearch />
                     </div>
                 </main>
 

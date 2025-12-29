@@ -1,114 +1,105 @@
-import { useState, useEffect } from 'react';
-import Navbar from './layouts/Navbar';
-import Hero from './components/Hero';
-import QuickTools from './components/QuickTools';
-import FeaturesSection from './components/FeaturesSection';
-import CanadaMap from './components/CanadaMap';
-import ConsultationBooking from './components/ConsultationBooking';
-import TestimonialsSection from './components/TestimonialsSection';
-import ChatWidget from './components/ChatWidget';
-import AssessmentPage from './pages/AssessmentPage';
-import CalculatorPage from './pages/CalculatorPage';
-import ExpressEntryHub from './features/ExpressEntry/ExpressEntryHub';
-import PathwayExplorer from './components/PathwayExplorer';
-import UnderConstruction from './pages/UnderConstruction';
-import AboutContact from './pages/AboutContact';
+import { lazy, Suspense, useEffect } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import MainLayout from './layouts/MainLayout';
+import { AuthGuard } from './components/AuthGuard';
+
+// Lazy load pages for commercial-grade performance (Code Splitting)
+const HomePage = lazy(() => import('./pages/HomePage'));
+const AssessmentPage = lazy(() => import('./pages/AssessmentPage'));
+const CalculatorPage = lazy(() => import('./pages/CalculatorPage'));
+const ExpressEntryHub = lazy(() => import('./features/ExpressEntry/ExpressEntryHub'));
+const PathwayExplorer = lazy(() => import('./components/PathwayExplorer'));
+const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const DocumentChecklistPage = lazy(() => import('./pages/DocumentChecklistPage'));
+const AboutContact = lazy(() => import('./pages/AboutContact'));
+const UnderConstruction = lazy(() => import('./pages/UnderConstruction'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('./pages/TermsOfService'));
+
+// Dashboard sub-pages
+const OnboardingPage = lazy(() => import('./pages/OnboardingPage'));
+const ProfilePage = lazy(() => import('./pages/dashboard/ProfilePage'));
+const DocumentVaultPage = lazy(() => import('./pages/dashboard/DocumentVaultPage'));
+const JobMatcherPage = lazy(() => import('./pages/dashboard/JobMatcherPage'));
+const SettingsPage = lazy(() => import('./pages/dashboard/SettingsPage'));
+
+// Simple Loading Fallback
+const PageLoader = () => (
+  <div className="min-h-[60vh] flex items-center justify-center">
+    <div className="size-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+  </div>
+);
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('home');
+  const { pathname } = useLocation();
 
-  // Scroll to top when page changes
+  // Scroll to top on every route change
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [currentPage]);
-
-  // Handle navigation with optional section scrolling
-  const handleNavigate = (page: string) => {
-    // Check if it's a section scroll (contains #)
-    if (page.startsWith('#')) {
-      const element = document.getElementById(page.slice(1));
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-      return;
-    }
-    setCurrentPage(page);
-  };
-
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'assessment': return <AssessmentPage />;
-      case 'calculator': return <CalculatorPage />;
-      case 'express-entry': return <ExpressEntryHub />;
-      case 'pathway-explorer': return <PathwayExplorer />;
-      case 'about': return <AboutContact onNavigate={handleNavigate} />;
-      case 'contact': return <AboutContact onNavigate={handleNavigate} />;
-      case 'login': return <UnderConstruction pageName="Login" onBack={() => handleNavigate('home')} />;
-      case 'resources': return <UnderConstruction pageName="Resources" onBack={() => handleNavigate('home')} />;
-      default: return (
-        <>
-          <Hero onNavigate={handleNavigate} />
-          <QuickTools onNavigate={handleNavigate} />
-          <FeaturesSection />
-          <CanadaMap onNavigate={handleNavigate} />
-          <TestimonialsSection />
-          <ConsultationBooking />
-          <footer id="footer" className="py-12 px-6 border-t border-white/5 text-center bg-background-dark">
-            <div className="max-w-7xl mx-auto">
-              <div className="grid md:grid-cols-4 gap-8 mb-8 text-left">
-                <div>
-                  <h4 className="text-white font-bold mb-4">CanadaPath AI</h4>
-                  <p className="text-gray-500 text-sm leading-relaxed">
-                    AI-powered immigration guidance for your Canadian dream.
-                  </p>
-                </div>
-                <div>
-                  <h4 className="text-white font-bold mb-4">Quick Links</h4>
-                  <div className="space-y-2">
-                    <button onClick={() => handleNavigate('assessment')} className="block text-gray-500 hover:text-white text-sm transition-colors">Free Assessment</button>
-                    <button onClick={() => handleNavigate('calculator')} className="block text-gray-500 hover:text-white text-sm transition-colors">CRS Calculator</button>
-                    <button onClick={() => handleNavigate('express-entry')} className="block text-gray-500 hover:text-white text-sm transition-colors">Express Entry</button>
-                  </div>
-                </div>
-                <div>
-                  <h4 className="text-white font-bold mb-4">Company</h4>
-                  <div className="space-y-2">
-                    <button onClick={() => handleNavigate('about')} className="block text-gray-500 hover:text-white text-sm transition-colors">About Us</button>
-                    <button onClick={() => handleNavigate('contact')} className="block text-gray-500 hover:text-white text-sm transition-colors">Contact</button>
-                    <button onClick={() => handleNavigate('resources')} className="block text-gray-500 hover:text-white text-sm transition-colors">Resources</button>
-                  </div>
-                </div>
-                <div>
-                  <h4 className="text-white font-bold mb-4">Legal</h4>
-                  <div className="space-y-2">
-                    <button className="block text-gray-500 hover:text-white text-sm transition-colors">Privacy Policy</button>
-                    <button className="block text-gray-500 hover:text-white text-sm transition-colors">Terms of Service</button>
-                    <button className="block text-gray-500 hover:text-white text-sm transition-colors">Disclaimer</button>
-                  </div>
-                </div>
-              </div>
-              <div className="pt-8 border-t border-white/5 text-white/20 text-xs font-medium uppercase tracking-[0.3em]">
-                © 2025 CanadaPath AI • Precision Immigration Technology
-              </div>
-            </div>
-          </footer>
-        </>
-      );
-    }
-  };
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   return (
-    <div className="min-h-screen bg-background-dark selection:bg-accent-red selection:text-white font-body scroll-smooth">
-      {currentPage !== 'pathway-explorer' && (
-        <Navbar onNavigate={handleNavigate} currentPage={currentPage} />
-      )}
+    <MainLayout>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/assessment" element={<AssessmentPage />} />
+          <Route path="/calculator" element={<CalculatorPage />} />
+          <Route path="/express-entry" element={<ExpressEntryHub />} />
+          <Route path="/pathway-explorer" element={<PathwayExplorer />} />
+          <Route path="/pathways" element={<PathwayExplorer />} />
+          <Route path="/checklist" element={<DocumentChecklistPage />} />
+          <Route path="/documents" element={<DocumentChecklistPage />} />
+          <Route path="/about" element={<AboutContact />} />
+          <Route path="/contact" element={<AboutContact />} />
 
-      <main>
-        {renderPage()}
-      </main>
+          {/* Legal Pages */}
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/cookies" element={<PrivacyPolicy />} />
+          <Route path="/disclaimer" element={<TermsOfService />} />
 
-      <ChatWidget />
-    </div>
+          {/* Protected Dashboard Routes */}
+          <Route path="/dashboard" element={
+            <AuthGuard>
+              <DashboardPage />
+            </AuthGuard>
+          } />
+          <Route path="/dashboard/onboarding" element={
+            <AuthGuard>
+              <OnboardingPage />
+            </AuthGuard>
+          } />
+          <Route path="/dashboard/profile" element={
+            <AuthGuard>
+              <ProfilePage />
+            </AuthGuard>
+          } />
+          <Route path="/dashboard/documents" element={
+            <AuthGuard>
+              <DocumentVaultPage />
+            </AuthGuard>
+          } />
+          <Route path="/dashboard/jobs" element={
+            <AuthGuard>
+              <JobMatcherPage />
+            </AuthGuard>
+          } />
+          <Route path="/dashboard/settings" element={
+            <AuthGuard>
+              <SettingsPage />
+            </AuthGuard>
+          } />
+
+          {/* Fallback Routes */}
+          <Route path="/login" element={<UnderConstruction pageName="Login" />} />
+          <Route path="/resources" element={<UnderConstruction pageName="Resources" />} />
+          <Route path="/blog" element={<UnderConstruction pageName="Blog" />} />
+          <Route path="*" element={<UnderConstruction pageName="Page Not Found" />} />
+        </Routes>
+      </Suspense>
+    </MainLayout>
   );
 }
 
