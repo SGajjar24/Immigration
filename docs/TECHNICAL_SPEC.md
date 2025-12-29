@@ -3,8 +3,8 @@
 ## Document Information
 | Field | Value |
 |-------|-------|
-| Version | 1.0.0 |
-| Last Updated | December 2025 |
+| Version | 1.1.0 |
+| Last Updated | December 30, 2025 |
 | Status | Production |
 
 ---
@@ -16,17 +16,20 @@
 |------------|---------|---------|
 | React | 19.0.0 | UI Framework |
 | TypeScript | 5.7.2 | Type Safety |
-| Vite | 7.0.7 | Build Tool |
+| Vite | 7.3.0 | Build Tool |
 | Tailwind CSS | 4.0.0 | Styling |
 | Framer Motion | 11.x | Animations |
 | Lucide React | - | Icons |
+| Zustand | 5.0.x | State Management |
+| React Hook Form | 7.x | Form Management |
+| Zod | 3.x | Validation Schema |
 
-### Build & Deployment
+### Backend & infrastructure
 | Tool | Purpose |
 |------|---------|
-| Vite | Development server & bundling |
-| TypeScript Compiler (tsc) | Type checking |
-| Netlify | Hosting & CDN |
+| Firebase Auth | User authentication (Google Sign-In) |
+| Firebase Hosting | Static web hosting & CDN |
+| Firebase Firestore | NoSQL database (profile persistence) |
 
 ---
 
@@ -43,273 +46,119 @@
 │  │  └─────────┘ └─────────┘ └─────────┘ └─────────┘   │    │
 │  └─────────────────────────────────────────────────────┘    │
 ├─────────────────────────────────────────────────────────────┤
-│                    APPLICATION LAYER                         │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐     │
-│  │ Navigation  │  │  State Mgmt │  │  Event Handlers │     │
-│  │ (useState)  │  │  (useState) │  │  (onClick, etc) │     │
-│  └─────────────┘  └─────────────┘  └─────────────────┘     │
+│                    APPLICATION LAYER (Zustand)               │
+│  ┌─────────────┐  ┌──────────────┐  ┌─────────────────┐    │
+│  │ Auth State  │  │ Profile Data │  │  CRS Logic      │    │
+│  │ (Firebase)  │  │ (Dashboard)  │  │  (Core Engine)  │    │
+│  └─────────────┘  └──────────────┘  └─────────────────┘    │
 ├─────────────────────────────────────────────────────────────┤
 │                    DATA LAYER                                │
 │  ┌─────────────────────────────────────────────────────┐    │
-│  │              Static Data & Constants                 │    │
+│  │              Static & Persistent Data                │    │
 │  │  • Province Data (ALL_PROVINCES)                     │    │
 │  │  • Immigration KB (IMMIGRATION_KB)                   │    │
-│  │  • Time Slots, Team Members, Stats                   │    │
+│  │  • User Profiles (Firestore)                         │    │
 │  └─────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Component Hierarchy
+### Component Hierarchy (Enhanced)
 ```
 App.tsx
-├── Navbar.tsx
-├── [Home Page]
-│   ├── Hero.tsx
-│   ├── QuickTools.tsx
-│   ├── FeaturesSection.tsx
-│   ├── CanadaMap.tsx
-│   ├── TestimonialsSection.tsx
-│   └── ConsultationBooking.tsx
-├── [Assessment Page]
-│   └── AssessmentWizard.tsx
-├── [Calculator Page]
-│   └── CRSCalculator.tsx
-├── [Express Entry]
-│   └── ExpressEntryHub.tsx
-├── [Pathway Explorer]
-│   └── PathwayExplorer.tsx
-├── [About/Contact]
-│   └── AboutContact.tsx
-├── ChatWidget.tsx (Global)
-└── ErrorBoundary.tsx (Wrapper)
+├── AuthGuard.tsx (Route Protection)
+├── MainLayout.tsx / DashboardLayout.tsx
+├── [Public Site]
+│   ├── HomePage.tsx
+│   ├── AssessmentPage.tsx
+│   ├── CalculatorPage.tsx
+│   └── ...
+├── [Onboarding]
+│   └── OnboardingPage.tsx
+│       └── EligibilityWizard.tsx
+└── [Dashboard]
+    ├── DashboardPage.tsx (Overview)
+    ├── ProfilePage.tsx
+    ├── DocumentVaultPage.tsx
+    ├── JobMatcherPage.tsx
+    └── SettingsPage.tsx
 ```
 
 ---
 
-## 3. Component Specifications
+## 3. Core Engine (Immigration)
 
-### Core Components
+### Zod Schema & Validation
+Located in `src/lib/schema/immigrationProfile.ts`.
+- Validates age, education levels, language scores (CLB 1-12), work experience, and additional factors.
+- Supports conditional logic for spouse details.
 
-#### CanadaMap.tsx
-| Property | Type | Description |
-|----------|------|-------------|
-| onNavigate | (page: string) => void | Navigation callback |
+### CRS Calculator
+`calculateCRS(profile: ImmigrationProfile)` implementation:
+- **Core Factors:** Age, Education, Language, Canadian Experience.
+- **Skill Transferability:** Multi-factor points based on language + education or language + experience.
+- **Additional Points:** PNP (600), Job Offer (50), Sibling (15), Trade Cert (50).
 
-**State:**
-- `selectedId: string | null` - Currently selected province
-- `zoom: number` - Map zoom level (1-2)
-- `filters: FilterState` - Active filters
-
-**Data Structure:**
-```typescript
-interface ProvinceData {
-  id: string;
-  code: string;
-  name: string;
-  matchRate: number;
-  crsCutoff: number;
-  invites: number;
-  streams: Stream[];
-  highlight: string;
-}
-```
-
-#### ChatWidget.tsx
-| Property | Type | Description |
-|----------|------|-------------|
-| - | - | No props (self-contained) |
-
-**Features:**
-- Keyword-based response matching
-- Immigration knowledge base
-- Quick prompts
-- Message history
-
-#### ConsultationBooking.tsx
-**State:**
-- `step: 'select' | 'confirm'` - Current step
-- `weekOffset: number` - Week navigation
-- `selectedDate: Date | null` - Selected date
-- `selectedTime: string | null` - Selected time slot
+### Recommendation Engine
+`generateSuggestions(profile: ImmigrationProfile)`:
+- Dynamically analyzes profile gaps.
+- Returns actionable insights like "Improve CLB to 9+", "Gain 1 year Canadian Experience", or "Apply for PNP".
 
 ---
 
-## 4. Data Structures
+## 4. State Management
 
-### Province Data (13 provinces/territories)
-```typescript
-const ALL_PROVINCES: Record<string, ProvinceData> = {
-  on: { /* Ontario */ },
-  bc: { /* British Columbia */ },
-  ab: { /* Alberta */ },
-  // ... 10 more
-};
-```
-
-### Immigration Knowledge Base
-```typescript
-const IMMIGRATION_KB = {
-  expressEntry: { /* Express Entry info */ },
-  pnp: { /* Provincial Nominee Programs */ },
-  scores: { /* CRS Score info */ },
-  documents: { /* Document requirements */ },
-  // ...
-};
-```
+### userProfile Store (`useImmigrationStore.ts`)
+| State Property | Description |
+|----------------|-------------|
+| `userProfile` | Name, email, onboarding status, target province |
+| `crsData` | Detailed immigration profile data for score calculation |
+| `onboarded` | Boolean flag to trigger onboarding vs dashboard view |
 
 ---
 
-## 5. Styling System
+## 5. Component Specifications
+
+#### EligibilityWizard.tsx
+- Multi-step form built with `react-hook-form`.
+- Real-time CRS score preview update on any input change.
+- Progress visualization with `Progress` component and `Check` icons.
+
+#### DashboardLayout.tsx
+- Sidebar navigation with active state tracking.
+- Profile dropdown with "Sign Out" functionality.
+- Mobile-responsive sidebar with overlay.
+
+---
+
+## 6. Styling System
 
 ### Design Tokens (Tailwind CSS v4)
-```css
-@theme {
-  --color-primary: #1f3b61;
-  --color-primary-light: #2d5283;
-  --color-primary-dark: #0f172a;
-  --color-maple-red: #dc2626;
-  --color-maple-dark: #b91c1c;
-  --color-accent-gold: #fbbf24;
-  --color-background-dark: #0b1120;
-  --font-display: "Plus Jakarta Sans", sans-serif;
-  --font-body: "Inter", sans-serif;
-}
-```
-
-### Glassmorphism Pattern
-```css
-.glass-panel {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-}
-```
+- **Primary:** Dark Navy (#1f3b61)
+- **Accent:** Maple Red (#dc2626)
+- **Background:** Deep Dark (#0b1120)
+- **Gradient:** Blue to Purple for premium actions.
 
 ---
 
-## 6. Performance Specifications
-
-### Bundle Analysis
-| Asset | Size | Gzipped |
-|-------|------|---------|
-| JavaScript | ~498 KB | ~146 KB |
-| CSS | ~156 KB | ~20 KB |
-| HTML | ~3.5 KB | ~1.2 KB |
-
-### Loading Targets
-| Metric | Target | Method |
-|--------|--------|--------|
-| First Contentful Paint | < 1.5s | CSS optimization |
-| Largest Contentful Paint | < 2.5s | Image lazy loading |
-| Time to Interactive | < 3.5s | Code splitting |
-| Cumulative Layout Shift | < 0.1 | Fixed dimensions |
-
-### Image Strategy
-- External CDN: Unsplash (images.unsplash.com)
-- Auto-format: `?auto=format&fit=crop`
-- Quality optimization: `?q=80`
-- Responsive sizing: `&w=600` (or appropriate)
-
----
-
-## 7. SEO Implementation
-
-### Meta Tags
-```html
-<title>CanadaPath AI | AI-Powered Immigration</title>
-<meta name="description" content="...">
-<meta name="keywords" content="...">
-```
-
-### Open Graph
-```html
-<meta property="og:title" content="...">
-<meta property="og:description" content="...">
-<meta property="og:image" content="...">
-```
-
-### Structured Data
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "CanadaPath AI",
-  "url": "https://canadapath-ai.netlify.app"
-}
-```
-
----
-
-## 8. Error Handling
-
-### ErrorBoundary Component
-Wraps entire application to catch React errors.
-
-**Fallback UI:**
-- Error message display
-- Retry button
-- Home navigation
-- Stack trace (development only)
-
-### Form Validation
-- Client-side validation
-- Required field indicators
-- Real-time feedback
-- Submit button disabled states
-
----
-
-## 9. Browser Support
-
-| Browser | Minimum Version |
-|---------|-----------------|
-| Chrome | 90+ |
-| Firefox | 88+ |
-| Safari | 14+ |
-| Edge | 90+ |
-
-### Required Features
-- ES2020+ (async/await, optional chaining)
-- CSS Grid & Flexbox
-- CSS Custom Properties
-- Backdrop Filter (glassmorphism)
-
----
-
-## 10. Deployment
-
-### Netlify Configuration
-```
-# _redirects
-/*  /index.html  200
-```
+## 7. Performance & Deployment
 
 ### Build Command
-```bash
-npm run build
-# Output: dist/
-```
+`npm run build` (Vite + TS)
 
-### Environment Variables
-Currently none required (static frontend).
+### Deployment
+`firebase deploy --only hosting`
+Production URL: `https://canadapath-ai.web.app`
 
 ---
 
-## 11. Future Considerations
+## 8. Future Considerations
 
 ### Planned Enhancements
-- [ ] Backend API integration
-- [ ] User authentication (Login)
-- [ ] Profile persistence
-- [ ] Real-time draw data
-- [ ] Document upload system
-- [ ] Payment integration
-
-### Scalability
-- Component-based architecture allows easy extension
-- Feature-based folder structure for new modules
-- TypeScript ensures type safety for larger codebase
+- [ ] AI OCR for document verification in Document Vault.
+- [ ] Real-time PNP draw notifications via Firebase Cloud Messaging.
+- [ ] Detailed PDF report generation for CRS assessments.
+- [ ] Mentor chat integration for direct RCIC consultation.
 
 ---
 
-*Document generated for CanadaPath AI v1.0.0*
+*Document generated for CanadaPath AI v1.1.0*

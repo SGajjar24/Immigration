@@ -5,9 +5,10 @@
   
   **AI-Powered Canadian Immigration Guidance Platform**
   
-  [![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge)](https://canadapath-ai.netlify.app)
+  [![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge)](https://canadapath-ai.web.app)
   [![React](https://img.shields.io/badge/React-19-blue?style=for-the-badge&logo=react)](https://react.dev)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?style=for-the-badge&logo=typescript)](https://typescriptlang.org)
+  [![Firebase](https://img.shields.io/badge/Firebase-Auth-orange?style=for-the-badge&logo=firebase)](https://firebase.google.com)
   [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-06B6D4?style=for-the-badge&logo=tailwindcss)](https://tailwindcss.com)
 </div>
 
@@ -15,19 +16,19 @@
 
 ## 🌟 Overview
 
-CanadaPath AI is an enterprise-grade web application that provides AI-powered immigration guidance for applicants seeking Canadian permanent residency. The platform offers real-time eligibility assessments, CRS score calculations, provincial pathway exploration, and intelligent chatbot assistance.
+CanadaPath AI is an enterprise-grade web application that provides AI-powered immigration guidance for applicants seeking Canadian permanent residency. The platform features a robust **Immigration Core Engine** that handles CRS calculations, eligibility assessments, and personalized recommendations.
 
 ### ✨ Key Features
 
 | Feature | Description |
 |---------|-------------|
-| 🎯 **Eligibility Assessment** | Multi-step wizard to evaluate immigration eligibility |
-| 🧮 **CRS Calculator** | Real-time Comprehensive Ranking System score calculation |
-| 🗺️ **Interactive Canada Map** | Explore all 13 provinces/territories with filtering |
-| 🤖 **AI Chat Assistant** | Intelligent chatbot with immigration knowledge base |
-| 📅 **Consultation Booking** | Schedule 1-on-1 sessions with immigration experts |
-| 📊 **Express Entry Hub** | Dashboard for Express Entry pool management |
-| 🛤️ **Pathway Explorer** | Visual flowchart for immigration pathways |
+| 🚀 **Onboarding Wizard** | 5-step interactive assessment with real-time CRS score preview |
+| 📊 **User Dashboard** | Personalized overview of scores, trends, and application progress |
+| 🧮 **CRS Engine** | Complex logic for Comprehensive Ranking System calculation (Zod-validated) |
+| 📁 **Document Vault** | Secure management of required immigration documents and statuses |
+| 🔍 **Job Matcher** | Search LMIA-approved jobs with profile matching logic |
+| 🗺️ **Interactive Map** | Explore provincial pathways (PNPs) with advanced filters |
+| 🤖 **AI Chat Assistant** | Intelligent chatbot with an immigration-specific knowledge base |
 
 ---
 
@@ -35,84 +36,62 @@ CanadaPath AI is an enterprise-grade web application that provides AI-powered im
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        CLIENT LAYER                              │
+│                        COMPONENT LAYER                           │
 │  ┌─────────────────────────────────────────────────────────┐    │
 │  │                    React 19 + Vite 7                     │    │
-│  │  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────────┐   │    │
-│  │  │  Hero   │ │  Map    │ │  Forms  │ │  ChatWidget │   │    │
-│  │  └─────────┘ └─────────┘ └─────────┘ └─────────────┘   │    │
+│  │  ┌───────────┐ ┌───────────┐ ┌───────────┐ ┌──────────┐  │    │
+│  │  │ Dashboard │ │ Onboarding│ │   Auth    │ │ Chatbot  │  │    │
+│  │  └───────────┘ └───────────┘ └───────────┘ └──────────┘  │    │
 │  └─────────────────────────────────────────────────────────┘    │
 ├─────────────────────────────────────────────────────────────────┤
-│                        STATE LAYER                               │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐     │
-│  │ React State │  │ URL Routing │  │ Local Storage Cache │     │
-│  └─────────────┘  └─────────────┘  └─────────────────────┘     │
+│                        ENGINE & STATE                            │
+│  ┌──────────────┐  ┌──────────────┐  ┌─────────────────────┐    │
+│  │ Zustand Store│  │  Zod Schema  │  │  CRS Logic Utility  │    │
+│  │ (Persistence)│  │ (Validation) │  │ (Core Calculator)   │    │
+│  └──────────────┘  └──────────────┘  └─────────────────────┘    │
 ├─────────────────────────────────────────────────────────────────┤
-│                        UI FRAMEWORK                              │
+│                        INFRASTRUCTURE                            │
 │  ┌─────────────────────────────────────────────────────────┐    │
-│  │              Tailwind CSS v4 + Framer Motion             │    │
-│  │         Glassmorphism | Animations | Responsive          │    │
-│  └─────────────────────────────────────────────────────────┘    │
-├─────────────────────────────────────────────────────────────────┤
-│                        DEPLOYMENT                                │
-│  ┌─────────────────────────────────────────────────────────┐    │
-│  │                     Netlify CDN                          │    │
-│  │              HTTPS | Edge Caching | CI/CD                │    │
+│  │              Firebase Auth & Hosting & Firestore             │    │
+│  │         Secure Sign-In | Global CDN | Profile Sync          │    │
 │  └─────────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 📁 Project Structure
+## 📁 Project Structure (Key Modules)
 
 ```
 canadapath-ai/
-├── public/
-│   ├── favicon.svg          # Brand logo
-│   └── _redirects            # Netlify SPA routing
 ├── src/
-│   ├── components/           # Reusable UI components
-│   │   ├── CanadaMap.tsx     # Interactive map with filters
-│   │   ├── ChatWidget.tsx    # AI chatbot assistant
-│   │   ├── ConsultationBooking.tsx
-│   │   ├── FeaturesSection.tsx
-│   │   ├── Hero.tsx          # Landing hero section
-│   │   ├── PathwayExplorer.tsx
-│   │   ├── QuickTools.tsx
-│   │   └── TestimonialsSection.tsx
-│   ├── features/
-│   │   ├── Assessment/       # Assessment wizard & CRS calc
-│   │   └── ExpressEntry/     # Express Entry dashboard
-│   ├── layouts/
-│   │   └── Navbar.tsx        # Global navigation
+│   ├── components/
+│   │   ├── dashboard/       # DashboardLayout, Sidebar, Metrics
+│   │   ├── onboarding/      # EligibilityWizard
+│   │   └── ui/              # Shadcn-inspired base components
+│   ├── lib/
+│   │   └── schema/          # ImmigrationProfile Zod schema + CRS engine
+│   ├── store/
+│   │   └── useImmigrationStore.ts # Central state with persistence
 │   ├── pages/
-│   │   ├── AboutContact.tsx  # About/Contact combined
-│   │   ├── AssessmentPage.tsx
-│   │   └── CalculatorPage.tsx
-│   ├── utils/
-│   │   └── cn.ts             # Class name utility
-│   ├── App.tsx               # Main application
-│   ├── main.tsx              # Entry point
-│   └── index.css             # Global styles
-├── index.html                # HTML template with SEO
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-└── README.md
+│   │   ├── dashboard/       # Profile, Documents, Jobs, Settings pages
+│   │   ├── OnboardingPage.tsx 
+│   │   └── DashboardPage.tsx # Overview dashboard
+│   ├── services/            # Firebase config and auth logic
+│   └── App.tsx              # Auth-protected routing system
+├── docs/                    # Technical Spec and User Manual
+└── firebase.json            # Deployment configuration
 ```
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Getting Started
 
 ### Prerequisites
-
-- **Node.js** v18+ 
-- **npm** v9+
+- Node.js v18+
+- Reach out for Firebase environment variables (.env)
 
 ### Installation
-
 ```bash
 # Clone the repository
 git clone https://github.com/SGajjar24/Immigration.git
@@ -125,85 +104,29 @@ npm install
 npm run dev
 ```
 
-The app will be available at `http://localhost:5173`
-
-### Build for Production
-
+### Build & Deploy
 ```bash
 npm run build
+firebase deploy --only hosting
 ```
-
-Output will be in the `dist/` folder.
 
 ---
 
 ## 🎨 Design System
 
-### Colors
-
-| Token | Value | Usage |
-|-------|-------|-------|
-| `primary` | `#1f3b61` | Primary actions, links |
-| `maple-red` | `#dc2626` | CTA buttons, accents |
-| `accent-gold` | `#fbbf24` | Highlights, badges |
-| `background-dark` | `#0b1120` | Page background |
-
-### Typography
-
-- **Display Font:** Plus Jakarta Sans
-- **Body Font:** Inter
-
-### Components
-
-All components follow a glassmorphism design pattern with:
-- Semi-transparent backgrounds (`bg-white/5`)
-- Subtle borders (`border-white/10`)
-- Backdrop blur effects
-- Smooth hover transitions
+We use a **Luminous Glass** design system:
+- **Primary:** Dark Navy (`#1f3b61`)
+- **Accent:** Maple Red (`#dc2626`)
+- **Surface:** Semi-transparent Glass (`bg-white/5`)
+- **Logic:** Responsive layouts using Tailwind v4 grid and flex utilities.
 
 ---
 
-## 📊 Performance Optimizations
+## 📄 Documentation
 
-| Optimization | Implementation |
-|--------------|----------------|
-| **Code Splitting** | Vite automatic chunking |
-| **CSS Optimization** | Tailwind v4 atomic CSS |
-| **Image Loading** | External CDN (Unsplash) with auto-format |
-| **Tree Shaking** | Unused code elimination |
-| **Minification** | Terser for JS, Lightning CSS |
-
-### Lighthouse Scores (Target)
-
-- **Performance:** 90+
-- **Accessibility:** 95+
-- **Best Practices:** 100
-- **SEO:** 100
-
----
-
-## 🤖 AI Chatbot Features
-
-The chatbot uses an internal knowledge base covering:
-
-- Express Entry eligibility
-- Provincial Nominee Programs (PNP)
-- CRS score improvement tips
-- Document requirements
-- Processing times
-- Language test requirements (IELTS/CELPIP/TEF)
-
----
-
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) for details.
-
----
-
-## 👥 Contributors
-
-- **CanadaPath AI Team**
+For detailed information, refer to the following documents in the `docs/` folder:
+- [Technical Specification](docs/TECHNICAL_SPEC.md) - architecture, data structures, and logic.
+- [User Manual](docs/USER_MANUAL.md) - Guide on using the platform.
 
 ---
 
