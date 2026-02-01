@@ -18,72 +18,47 @@
 
 CanadaPath AI is an enterprise-grade web application that provides AI-powered immigration guidance for applicants seeking Canadian permanent residency. The platform features a robust **Immigration Core Engine** that handles CRS calculations, eligibility assessments, and personalized recommendations.
 
-### ✨ Key Features
+## ✨ Key Features
 
 | Feature | Description |
-|---------|-------------|
+|:---|:---|
 | 🚀 **Onboarding Wizard** | 5-step interactive assessment with real-time CRS score preview |
 | 📊 **User Dashboard** | Personalized overview of scores, trends, and application progress |
 | 🧮 **CRS Engine** | Complex logic for Comprehensive Ranking System calculation (Zod-validated) |
-| 📁 **Document Vault** | Secure management of required immigration documents and statuses |
-| 🔍 **Job Matcher** | Search LMIA-approved jobs with profile matching logic |
-| 🗺️ **Interactive Map** | Explore provincial pathways (PNPs) with advanced filters |
-| 🤖 **AI Chat Assistant** | Intelligent chatbot with an immigration-specific knowledge base |
+| ✅ **Eligibility Checker** | Multi-pathway support: Express Entry, PNP, LMIA, Study Permit |
+| 🤖 **AI Chat** | Gemini-powered chatbot for immigration queries |
+| 📑 **Document Manager** | Upload, organize, and track required documents |
+| 💼 **Job Board** | Curated listings for LMIA-approved positions |
 
----
+## 🛠️ Technology Stack
 
-## 🏗️ System Architecture
+| Category | Technology |
+|:---|:---|
+| **Frontend** | React 19, TypeScript 5.7, Vite |
+| **Styling** | Tailwind CSS v4, Framer Motion |
+| **State** | Zustand with localStorage persistence |
+| **Validation** | Zod schemas for type-safe forms |
+| **Backend** | Firebase Auth, Firestore, Hosting |
+| **AI** | Google Gemini 1.5 Pro API |
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        COMPONENT LAYER                           │
-│  ┌─────────────────────────────────────────────────────────┐    │
-│  │                    React 19 + Vite 7                     │    │
-│  │  ┌───────────┐ ┌───────────┐ ┌───────────┐ ┌──────────┐  │    │
-│  │  │ Dashboard │ │ Onboarding│ │   Auth    │ │ Chatbot  │  │    │
-│  │  └───────────┘ └───────────┘ └───────────┘ └──────────┘  │    │
-│  └─────────────────────────────────────────────────────────┘    │
-├─────────────────────────────────────────────────────────────────┤
-│                        ENGINE & STATE                            │
-│  ┌──────────────┐  ┌──────────────┐  ┌─────────────────────┐    │
-│  │ Zustand Store│  │  Zod Schema  │  │  CRS Logic Utility  │    │
-│  │ (Persistence)│  │ (Validation) │  │ (Core Calculator)   │    │
-│  └──────────────┘  └──────────────┘  └─────────────────────┘    │
-├─────────────────────────────────────────────────────────────────┤
-│                        INFRASTRUCTURE                            │
-│  ┌─────────────────────────────────────────────────────────┐    │
-│  │              Firebase Auth & Hosting & Firestore             │    │
-│  │         Secure Sign-In | Global CDN | Profile Sync          │    │
-│  └─────────────────────────────────────────────────────────┘    │
-└─────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 📁 Project Structure (Key Modules)
+## 📁 Project Structure
 
 ```
-canadapath-ai/
-├── src/
-│   ├── components/
-│   │   ├── dashboard/       # DashboardLayout, Sidebar, Metrics
-│   │   ├── onboarding/      # EligibilityWizard
-│   │   └── ui/              # Shadcn-inspired base components
-│   ├── lib/
-│   │   └── schema/          # ImmigrationProfile Zod schema + CRS engine
-│   ├── store/
-│   │   └── useImmigrationStore.ts # Central state with persistence
-│   ├── pages/
-│   │   ├── dashboard/       # Profile, Documents, Jobs, Settings pages
-│   │   ├── OnboardingPage.tsx 
-│   │   └── DashboardPage.tsx # Overview dashboard
-│   ├── services/            # Firebase config and auth logic
-│   └── App.tsx              # Auth-protected routing system
+src/
+├── core/                    
+│   ├── crsEngine.ts         # CRS scoring algorithm
+│   ├── profileSchema.ts     # Complete profile Zod schema + CRS engine
+├── store/
+│   └── useImmigrationStore.ts # Central state with persistence
+├── pages/
+│   ├── dashboard/           # Profile, Documents, Jobs, Settings pages
+│   ├── OnboardingPage.tsx 
+│   └── DashboardPage.tsx    # Overview dashboard
+├── services/                # Firebase config and auth logic
+└── App.tsx                  # Auth-protected routing system
 ├── docs/                    # Technical Spec and User Manual
 └── firebase.json            # Deployment configuration
 ```
-
----
 
 ## 🚀 Getting Started
 
@@ -110,8 +85,6 @@ npm run build
 firebase deploy --only hosting
 ```
 
----
-
 ## 🎨 Design System
 
 We use a **Luminous Glass** design system:
@@ -120,13 +93,37 @@ We use a **Luminous Glass** design system:
 - **Surface:** Semi-transparent Glass (`bg-white/5`)
 - **Logic:** Responsive layouts using Tailwind v4 grid and flex utilities.
 
----
-
 ## 📄 Documentation
 
 For detailed information, refer to the following documents in the `docs/` folder:
 - [Technical Specification](docs/TECHNICAL_SPEC.md) - architecture, data structures, and logic.
 - [User Manual](docs/USER_MANUAL.md) - Guide on using the platform.
+
+---
+
+## 👤 Author
+
+<table>
+  <tr>
+    <td><strong>Swetang Gajjar</strong></td>
+  </tr>
+  <tr>
+    <td>Senior AI Engineer | Legal-Tech & Forensic Intelligence Specialist</td>
+  </tr>
+  <tr>
+    <td>
+      <a href="https://linkedin.com/in/gajjarswetang">
+        <img src="https://img.shields.io/badge/LinkedIn-0077B5?logo=linkedin&logoColor=white" alt="LinkedIn">
+      </a>
+      <a href="https://github.com/SGajjar24">
+        <img src="https://img.shields.io/badge/GitHub-100000?logo=github&logoColor=white" alt="GitHub">
+      </a>
+      <a href="mailto:gajjarswetang@gmail.com">
+        <img src="https://img.shields.io/badge/Email-D14836?logo=gmail&logoColor=white" alt="Email">
+      </a>
+    </td>
+  </tr>
+</table>
 
 ---
 
