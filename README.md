@@ -69,8 +69,8 @@ src/
 ### Installation
 ```bash
 # Clone the repository
-git clone https://github.com/SGajjar24/Immigration.git
-cd Immigration
+git clone https://github.com/SGajjar24/canadapath-ai.git
+cd canadapath-ai
 
 # Install dependencies
 npm install
